@@ -14,7 +14,6 @@ class SceneGame : public Scene{
         // Objects
         Player m_player;
         TileMap m_tileMap;
-        // solid tiles vector?
         
         // Textures
         //Texture2D m_texBlock;

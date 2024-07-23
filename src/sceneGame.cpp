@@ -12,20 +12,9 @@ SceneGame::SceneGame(int p_screenWidth, int p_screenHeight)
     , m_player(p_screenHeight, p_screenWidth)
 {
     // Init objects on initializer list
-    std::cout << "test \n";
     
     // Object Calls
-    //portalManager.spawnPortal();
-    for(int i = 1; i < m_tileMap.getWidth() - 1; i++)
-        m_tileMap.setTile(new Tile({i*1.f,m_tileMap.getHeight()-2.f}, m_tileMap.getTileSize(), TILE_BASE, true));
-    for(int i = 3; i < 10; i++)
-        m_tileMap.setTile(new Tile({i*1.f,m_tileMap.getHeight()-6.f}, m_tileMap.getTileSize(), TILE_BASE, true));
-    for(int i = 22; i < 29; i++)
-        m_tileMap.setTile(new Tile({i*1.f,m_tileMap.getHeight()-4.f}, m_tileMap.getTileSize(), TILE_BASE, true));
-    for(int i = 22; i < 29; i++)
-        m_tileMap.setTile(new Tile({i*1.f,m_tileMap.getHeight()-5.f}, m_tileMap.getTileSize(), TILE_BASE, true));
-    for(int i = 25; i < 28; i++)
-        m_tileMap.setTile(new Tile({i*1.f,m_tileMap.getHeight()-6.f}, m_tileMap.getTileSize(), TILE_BASE, true));
+    m_tileMap.loadMap(1);
     
     // Textures
     //m_texBlock = LoadTexture("assets/block.png");
@@ -44,6 +33,12 @@ void SceneGame::update(Game* p_game){
     // DEBUG
     if(IsKeyPressed(KEY_ONE))
         p_game->changeScene(new SceneMenu(m_screenWidth, m_screenHeight));
+    else if(IsKeyPressed(KEY_TWO))
+        m_tileMap.loadMap(1);
+    else if(IsKeyPressed(KEY_THREE))
+        m_tileMap.loadMap(2);
+    else if(IsKeyPressed(KEY_FOUR))
+        m_tileMap.loadMap(3);
 }
 
 void SceneGame::draw(){
@@ -52,8 +47,8 @@ void SceneGame::draw(){
     // Effects
     
     // Objects
-    m_tileMap.draw();
     m_player.draw();
+    m_tileMap.draw();
     
     // UI
     

@@ -11,17 +11,12 @@ TileMap::TileMap() {
     m_textures[TILE_TEST1] = LoadTexture("assets/test1.png");
     m_textures[TILE_TEST2] = LoadTexture("assets/test2.png");
     m_textures[TILE_TEST3] = LoadTexture("assets/test3.png");
+    m_textures[TILE_LAMP] = LoadTexture("assets/lamp.png");
+    m_textures[TILE_WATER] = LoadTexture("assets/water.png");
 }
 
 TileMap::~TileMap() {
-    // Tiles
-    for (int y = 0; y < kMapHeight; y++) {
-        for (int x = 0; x < kMapWidth; x++) {
-            Tile* t = m_map[x][y];
-            if (t != nullptr)
-                delete t;
-        }
-    }
+    clearMap();
     
     // Textures
     for(auto& t : m_textures)
@@ -32,6 +27,12 @@ TileMap::~TileMap() {
 Tile* TileMap::getTile(int p_x, int p_y) {
     if (isWithinBounds(p_x, p_y))
         return m_map[p_x][p_y];
+    return nullptr;
+}
+Tile* TileMap::getTileWorldPos(int p_x, int p_y) {
+    int newX = p_x / kTileSize, newY = p_y / kTileSize;
+    if (isWithinBounds(newX, newY))
+        return m_map[newX][newY];
     return nullptr;
 }
 
@@ -51,11 +52,20 @@ int TileMap::getTileSize() const {
     return kTileSize;
 }
 
+const std::vector<Lamp*>& TileMap::getLamps() const{
+    return m_lamps;
+}
+
 void TileMap::setTile(Tile* p_tile) {
     Vector2 pos = p_tile->getPosition();
     int posx = pos.x, posy = pos.y;
     if (isWithinBounds(posx, posy))
         m_map[posx][posy] = p_tile;
+}
+
+void TileMap::setLamp(Lamp* p_lamp){
+    setTile(p_lamp);
+    m_lamps.push_back(p_lamp);
 }
 
 void TileMap::draw() {
@@ -66,4 +76,64 @@ void TileMap::draw() {
                 t->draw(m_textures[t->getType()]);
         }
     }
+}
+
+void TileMap::loadMap(int mapNumber){
+    if(mapNumber < 1 || mapNumber > 20) return;
+    clearMap();
+    if(mapNumber == 1){
+        for(int i = 1; i < kMapWidth - 1; i++)
+            setTile(new Tile({i*1.f,kMapHeight-2.f}, TILE_BASE, true));
+        for(int i = 3; i < 7; i++)
+            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
+        for(int i = 7; i < 10; i++)
+            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
+        for(int i = 25; i < 28; i++)
+            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
+        setLamp(new Lamp({5.f,kMapHeight-5.f}, TILE_LAMP, true, 2));
+    }
+    else if(mapNumber == 2){
+        for(int i = 1; i < kMapWidth - 1; i++)
+            setTile(new Tile({i*1.f,kMapHeight-2.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, false));
+        for(int i = 25; i < 28; i++)
+            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
+    }
+    else if(mapNumber == 3){
+        for(int i = 1; i < kMapWidth - 1; i++)
+            setTile(new Tile({i*1.f,kMapHeight-2.f}, TILE_BASE, true));
+        for(int i = 3; i < 10; i++)
+            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
+        for(int i = 4; i < 9; i++)
+            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_WATER, false));
+        // setTile(new Tile({3,kMapHeight-5.f}, TILE_BASE, true));
+        // setTile(new Tile({9,kMapHeight-5.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
+        for(int i = 25; i < 28; i++)
+            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
+    }
+}
+
+void TileMap::clearMap(){
+    for (int y = 0; y < kMapHeight; y++) {
+        for (int x = 0; x < kMapWidth; x++) {
+            Tile* t = m_map[x][y];
+            if (t != nullptr){
+                delete t;
+                m_map[x][y] = nullptr;
+            }
+        }
+    }
+    
+    m_lamps.clear();
 }
