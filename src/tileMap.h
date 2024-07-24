@@ -18,7 +18,9 @@ class TileMap {
         const std::vector<Lamp*>& getLamps() const;
         void setTile(Tile*);
         void setLamp(Lamp*);
+        void setWater(Tile*);
         void draw();
+        void drawWater();
         void loadMap(int);
     private:
         void clearMap();
@@ -28,4 +30,5 @@ class TileMap {
         Tile* m_map[kMapWidth][kMapHeight];
         std::unordered_map<TileType,Texture2D> m_textures;
         std::vector<Lamp*> m_lamps;
+        std::vector<std::pair<int,int>> m_waterTiles;
 };

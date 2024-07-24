@@ -15,15 +15,19 @@ Player::Player(int p_screenHeight, int p_screenWidth)
     , m_cornerTR({m_position.x+kPlayerSize,m_position.y})
     , m_cornerBL({m_position.x,m_position.y+kPlayerSize})
     , m_cornerBR(Vector2AddValue(m_position,kPlayerSize))
+    , m_orb( {p_screenWidth / 2.f, p_screenHeight / 2.f}, m_position)
     , m_onLight(false)
 {
-    /* */
+    m_orbTextures[MODE_ORB] = LoadTexture("assets/orb.png");
+    m_orbTextures[MODE_IRON] = LoadTexture("assets/iron.png");
+    m_orbTextures[MODE_CESIUM] = LoadTexture("assets/cesium.png");
 }
 
 void Player::update(TileMap& p_tileMap){
     ///// MOVEMENT /////
     Vector2 newPos;
     Tile* newTile;
+    float delta = GetFrameTime();
     
     //// Horizontal Movement ////
     bool aDown = IsKeyDown(KEY_A);
@@ -68,7 +72,7 @@ void Player::update(TileMap& p_tileMap){
         }
     }
     // New position
-    newPos.x = m_position.x + m_speed.x;
+    newPos.x = m_position.x + m_speed.x * 60.f * delta;
     // Right Collision
     if(m_speed.x > 0){
         newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerSize + 1), m_position.y );
@@ -105,14 +109,14 @@ void Player::update(TileMap& p_tileMap){
     else if (m_speed.y < 0 && IsKeyUp(KEY_SPACE))
         m_speed.y *= 0.6f;
     // Fall
-    if(m_speed.y < kJumpSpeedMax)
-        m_speed.y += kGravity;
+    if(m_speed.y < kJumpSpeedMax * 60.f)
+        m_speed.y += kGravity * 3600.f * delta;
     // Jump
     if(m_canJump && GetTime() - m_lastJumpTime < kBufferTime){
-        m_speed.y = -kJumpSpeedStart;
+        m_speed.y = -kJumpSpeedStart * 60.f;
         m_canJump = false;
     }
-    newPos.y = m_position.y + m_speed.y;
+    newPos.y = m_position.y + m_speed.y * delta;
     // float correction
     if(m_speed.y > -0.21f && m_speed.y < 0.21f) 
         m_speed.y = 0.0f;
@@ -166,10 +170,38 @@ void Player::update(TileMap& p_tileMap){
              break;
          }
     }
+    
+    // Orb
+    if(IsKeyDown(KEY_W))
+        m_orb.setMode(MODE_IRON);
+    else if(IsKeyDown(KEY_S))
+        m_orb.setMode(MODE_CESIUM);
+    else
+        m_orb.setMode(MODE_ORB);
+    m_orb.setTarget(m_position);
+    m_orb.update();
 }
 
-void Player::draw(){
-    DrawRectangleV(m_position, {kPlayerSize,kPlayerSize}, WHITE);
+void Player::draw(TileMap& p_tileMap){
+    if(m_onLight){
+        int i = 0;
+        Tile* t = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y);
+        while(t == nullptr || !t->isSolid())
+            t = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y + ++i * kPlayerSize);
+        float lightCoverHeight = t->getPositionWorld().y - m_position.y;
+        
+        
+        DrawRectangleV(m_position, {kPlayerSize * 1.f, lightCoverHeight}, BLACK);
+    }
+    
+    if(m_orb.onFront()){
+        DrawRectangleV(m_position, {kPlayerSize,kPlayerSize}, WHITE);
+        m_orb.draw(m_orbTextures[m_orb.getMode()]);
+    }
+    else{
+        m_orb.draw(m_orbTextures[m_orb.getMode()]);
+        DrawRectangleV(m_position, {kPlayerSize,kPlayerSize}, WHITE);
+    }
     
     // Debug
     DrawText(std::to_string(m_speed.y).c_str(), 50, 30, 20, WHITE);
@@ -184,4 +216,7 @@ void Player::draw(){
 
 Player::~Player(){
     // Unload
+    for(auto& t : m_orbTextures)
+        UnloadTexture(t.second);
+    m_orbTextures.clear();
 }

@@ -2,13 +2,15 @@
 
 #include "raylib.h"
 #include "tileMap.h"
+#include "orb.h"
 #include <vector>
+#include <unordered_map>
 
 class Player{
     public:
         Player(int, int);
         void update(TileMap&);
-        void draw();
+        void draw(TileMap&);
         ~Player();
     private:
         const int kScreenHeight;
@@ -32,6 +34,9 @@ class Player{
         Vector2 m_cornerTR;
         Vector2 m_cornerBL;
         Vector2 m_cornerBR;
+        
+        Orb m_orb;
+        std::unordered_map<OrbMode,Texture2D> m_orbTextures;
         
         // temp
         bool m_onLight;

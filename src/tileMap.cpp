@@ -1,5 +1,7 @@
 #include "tileMap.h"
 
+#include <utility>
+
 TileMap::TileMap() {
     // Init
     for (int y = 0; y < kMapHeight; y++) 
@@ -68,6 +70,14 @@ void TileMap::setLamp(Lamp* p_lamp){
     m_lamps.push_back(p_lamp);
 }
 
+void TileMap::setWater(Tile* p_tile) {
+    Vector2 pos = p_tile->getPosition();
+    int posx = pos.x, posy = pos.y;
+    if (isWithinBounds(posx, posy))
+        m_map[posx][posy] = p_tile;
+    m_waterTiles.push_back(std::make_pair(posx, posy));
+}
+
 void TileMap::draw() {
     for (int y = 0; y < kMapHeight; y++) {
         for (int x = 0; x < kMapWidth; x++) {
@@ -75,6 +85,13 @@ void TileMap::draw() {
             if (t != nullptr)
                 t->draw(m_textures[t->getType()]);
         }
+    }
+}
+
+void TileMap::drawWater(){
+    for(const auto& pair : m_waterTiles){
+        Tile* t = m_map[pair.first][pair.second];
+        t->draw(m_textures[t->getType()]);
     }
 }
 
@@ -112,9 +129,9 @@ void TileMap::loadMap(int mapNumber){
         for(int i = 3; i < 10; i++)
             setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
         for(int i = 4; i < 9; i++)
-            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_WATER, false));
-        // setTile(new Tile({3,kMapHeight-5.f}, TILE_BASE, true));
-        // setTile(new Tile({9,kMapHeight-5.f}, TILE_BASE, true));
+            setWater(new Tile({i*1.f,kMapHeight-5.f}, TILE_WATER, false));
+        setTile(new Tile({3,kMapHeight-5.f}, TILE_BASE, true));
+        setTile(new Tile({9,kMapHeight-5.f}, TILE_BASE, true));
         for(int i = 22; i < 29; i++)
             setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
         for(int i = 22; i < 29; i++)
@@ -136,4 +153,5 @@ void TileMap::clearMap(){
     }
     
     m_lamps.clear();
+    m_waterTiles.clear();
 }

@@ -47,8 +47,9 @@ void SceneGame::draw(){
     // Effects
     
     // Objects
-    m_player.draw();
     m_tileMap.draw();
+    m_player.draw(m_tileMap);
+    m_tileMap.drawWater();
     
     // UI
     
