@@ -27,6 +27,9 @@ void SceneGame::update(Game* p_game){
     // Objects
     m_player.update(m_tileMap);
     
+    for(const auto& mc : m_tileMap.getMagCores())
+        mc->update();
+    
     // GAME OVER
     
     

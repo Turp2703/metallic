@@ -16,11 +16,13 @@ Player::Player(int p_screenHeight, int p_screenWidth)
     , m_cornerBL({m_position.x,m_position.y+kPlayerSize})
     , m_cornerBR(Vector2AddValue(m_position,kPlayerSize))
     , m_orb( {p_screenWidth / 2.f, p_screenHeight / 2.f}, m_position)
-    , m_onLight(false)
+    , m_onLight(false), m_onWater(false), m_cesiumPush(false)
 {
     m_orbTextures[MODE_ORB] = LoadTexture("assets/orb.png");
     m_orbTextures[MODE_IRON] = LoadTexture("assets/iron.png");
     m_orbTextures[MODE_CESIUM] = LoadTexture("assets/cesium.png");
+    m_orbTextures[MODE_NEOL] = LoadTexture("assets/neodymiumL.png");
+    m_orbTextures[MODE_NEOR] = LoadTexture("assets/neodymiumR.png");
 }
 
 void Player::update(TileMap& p_tileMap){
@@ -106,7 +108,7 @@ void Player::update(TileMap& p_tileMap){
     //// Vertical Movement ////
     if(IsKeyPressed(KEY_SPACE))
         m_lastJumpTime = GetTime();
-    else if (m_speed.y < 0 && IsKeyUp(KEY_SPACE))
+    else if (m_speed.y < 0 && !m_cesiumPush && IsKeyUp(KEY_SPACE))
         m_speed.y *= 0.6f;
     // Fall
     if(m_speed.y < kJumpSpeedMax * 60.f)
@@ -116,11 +118,20 @@ void Player::update(TileMap& p_tileMap){
         m_speed.y = -kJumpSpeedStart * 60.f;
         m_canJump = false;
     }
+    // Cesium push
+    if(m_onWater && m_orb.getMode() == MODE_CESIUM){
+        m_speed.y = -kJumpSpeedStart * 100.f;
+        m_canJump = false;
+        m_cesiumPush = true;
+    }
+    if(m_speed.y > -10)
+        m_cesiumPush = false;
+    // New position
     newPos.y = m_position.y + m_speed.y * delta;
     // float correction
     if(m_speed.y > -0.21f && m_speed.y < 0.21f) 
         m_speed.y = 0.0f;
-    // Falling Collision
+    // Falling collision
     newTile = p_tileMap.getTileWorldPos( newPos.x, (newPos.y + kPlayerSize));
     if(newTile != nullptr && newTile->isSolid()){
         newPos.y = newTile->getPositionWorld().y - kPlayerSize;
@@ -138,7 +149,7 @@ void Player::update(TileMap& p_tileMap){
         } 
         else if(GetTime() - m_lastFloorTime > kCoyoteTime) m_canJump = false;
     }
-    // Jumping Collision
+    // Jumping collision
     newTile = p_tileMap.getTileWorldPos( newPos.x, newPos.y );
     if(newTile != nullptr && newTile->isSolid()){
         newPos.y = newTile->getPositionWorld().y + kPlayerSize;
@@ -174,12 +185,16 @@ void Player::update(TileMap& p_tileMap){
     // Orb
     if(IsKeyDown(KEY_W))
         m_orb.setMode(MODE_IRON);
-    else if(IsKeyDown(KEY_S))
+    else if(IsKeyDown(KEY_K))
         m_orb.setMode(MODE_CESIUM);
+    else if(IsKeyDown(KEY_L))
+        m_orb.setMode(MODE_NEOR);
+    else if(IsKeyDown(KEY_J))
+        m_orb.setMode(MODE_NEOL);
     else
         m_orb.setMode(MODE_ORB);
     m_orb.setTarget(m_position);
-    m_orb.update();
+    m_orb.update(p_tileMap.getMagCores());
 }
 
 void Player::draw(TileMap& p_tileMap){

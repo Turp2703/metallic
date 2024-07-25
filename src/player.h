@@ -41,4 +41,5 @@ class Player{
         // temp
         bool m_onLight;
         bool m_onWater;
+        bool m_cesiumPush;
 };

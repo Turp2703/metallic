@@ -15,6 +15,7 @@ TileMap::TileMap() {
     m_textures[TILE_TEST3] = LoadTexture("assets/test3.png");
     m_textures[TILE_LAMP] = LoadTexture("assets/lamp.png");
     m_textures[TILE_WATER] = LoadTexture("assets/water.png");
+    m_textureMagCore = LoadTexture("assets/magCore.png");
 }
 
 TileMap::~TileMap() {
@@ -24,6 +25,7 @@ TileMap::~TileMap() {
     for(auto& t : m_textures)
         UnloadTexture(t.second);
     m_textures.clear();
+    UnloadTexture(m_textureMagCore);
 }
 
 Tile* TileMap::getTile(int p_x, int p_y) {
@@ -58,6 +60,10 @@ const std::vector<Lamp*>& TileMap::getLamps() const{
     return m_lamps;
 }
 
+const std::vector<MagCore*>& TileMap::getMagCores() const{
+    return m_magCores;
+}
+
 void TileMap::setTile(Tile* p_tile) {
     Vector2 pos = p_tile->getPosition();
     int posx = pos.x, posy = pos.y;
@@ -78,6 +84,10 @@ void TileMap::setWater(Tile* p_tile) {
     m_waterTiles.push_back(std::make_pair(posx, posy));
 }
 
+void TileMap::setMagCore(MagCore* p_magCore){
+    m_magCores.push_back(p_magCore);
+}
+
 void TileMap::draw() {
     for (int y = 0; y < kMapHeight; y++) {
         for (int x = 0; x < kMapWidth; x++) {
@@ -86,6 +96,9 @@ void TileMap::draw() {
                 t->draw(m_textures[t->getType()]);
         }
     }
+    
+    for(const auto& mc : m_magCores)
+        mc->draw(m_textureMagCore);
 }
 
 void TileMap::drawWater(){
@@ -122,6 +135,7 @@ void TileMap::loadMap(int mapNumber){
             setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, false));
         for(int i = 25; i < 28; i++)
             setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
+        setMagCore(new MagCore( {4.f*kTileSize, (kMapHeight - 4.f)*kTileSize} ));
     }
     else if(mapNumber == 3){
         for(int i = 1; i < kMapWidth - 1; i++)
@@ -154,4 +168,8 @@ void TileMap::clearMap(){
     
     m_lamps.clear();
     m_waterTiles.clear();
+    
+    for(auto& mc : m_magCores)
+        delete mc;
+    m_magCores.clear();
 }
