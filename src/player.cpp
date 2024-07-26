@@ -206,7 +206,7 @@ void Player::draw(TileMap& p_tileMap){
         float lightCoverHeight = t->getPositionWorld().y - m_position.y;
         
         
-        DrawRectangleV(m_position, {kPlayerSize * 1.f, lightCoverHeight}, BLACK);
+        DrawRectangleV(m_position, {kPlayerSize * 1.f, lightCoverHeight}, DARKGRAY);
     }
     
     if(m_orb.onFront()){

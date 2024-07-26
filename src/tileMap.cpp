@@ -14,7 +14,10 @@ TileMap::TileMap() {
     m_textures[TILE_TEST2] = LoadTexture("assets/test2.png");
     m_textures[TILE_TEST3] = LoadTexture("assets/test3.png");
     m_textures[TILE_LAMP] = LoadTexture("assets/lamp.png");
+    m_textures[TILE_LAMPBROKEN] = LoadTexture("assets/lampBroken.png");
     m_textures[TILE_WATER] = LoadTexture("assets/water.png");
+    m_textures[TILE_MAGSLOT] = LoadTexture("assets/magSlot.png");
+    m_textures[TILE_MAGSLOTACTIVE] = LoadTexture("assets/magSlotActive.png");
     m_textureMagCore = LoadTexture("assets/magCore.png");
 }
 
@@ -88,11 +91,23 @@ void TileMap::setMagCore(MagCore* p_magCore){
     m_magCores.push_back(p_magCore);
 }
 
+void TileMap::setMagSlot(Tile* p_magSlot, Lamp* p_lamp){
+    setTile(p_magSlot);
+    m_magSlots[p_magSlot] = p_lamp;
+}
+
+void TileMap::activateMagSlot(Tile* p_magSlot){
+    Lamp* lamp = m_magSlots[p_magSlot];
+    lamp->breakLamp();
+    lamp->setType(TILE_LAMPBROKEN);
+    p_magSlot->setType(TILE_MAGSLOTACTIVE);
+}
+
 void TileMap::draw() {
     for (int y = 0; y < kMapHeight; y++) {
         for (int x = 0; x < kMapWidth; x++) {
             Tile* t = m_map[x][y];
-            if (t != nullptr)
+            if (t != nullptr && t->getType() != TILE_WATER)
                 t->draw(m_textures[t->getType()]);
         }
     }
@@ -153,6 +168,25 @@ void TileMap::loadMap(int mapNumber){
         for(int i = 25; i < 28; i++)
             setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
     }
+    if(mapNumber == 4){
+        for(int i = 1; i < kMapWidth - 1; i++)
+            setTile(new Tile({i*1.f,kMapHeight-2.f}, TILE_BASE, true));
+        for(int i = 3; i < 7; i++)
+            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
+        for(int i = 7; i < 10; i++)
+            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
+        for(int i = 22; i < 29; i++)
+            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
+        for(int i = 25; i < 28; i++)
+            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
+        Lamp* lamp1 = new Lamp({5.f,kMapHeight-5.f}, TILE_LAMP, true, 2);
+        setLamp(lamp1);
+        setMagCore(new MagCore( {5.f*kTileSize, (kMapHeight - 8.f)*kTileSize} ));
+        setMagCore(new MagCore( {3.f*kTileSize, (kMapHeight - 8.f)*kTileSize} ));
+        setMagSlot(new Tile( {26.f, kMapHeight-8.f}, TILE_MAGSLOT, false ), lamp1);
+    }
 }
 
 void TileMap::clearMap(){
@@ -168,6 +202,7 @@ void TileMap::clearMap(){
     
     m_lamps.clear();
     m_waterTiles.clear();
+    m_magSlots.clear();
     
     for(auto& mc : m_magCores)
         delete mc;

@@ -31,9 +31,13 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
         m_target.x -= 8.f;
         if(m_attachedMagCore == nullptr){
             for(const auto& mc : m_magCores)
-                if(CheckCollisionPointRec(m_leftMag, mc->getHitBox()))
+                if( m_attachedMagCore == nullptr && !mc->onSlot()
+                    && (CheckCollisionPointRec(m_leftMag, mc->getHitBox())
+                    || CheckCollisionPointRec({m_leftMag.x+16.f, m_leftMag.y}, mc->getHitBox())))
                     m_attachedMagCore = mc;
         }
+        else if (m_attachedMagCore->onSlot())
+            m_attachedMagCore = nullptr;
         else
             m_attachedMagCore->attach( { m_leftMag.x, m_leftMag.y - 16.f } );
     }
@@ -41,9 +45,13 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
         m_target.x += 8.f;
         if(m_attachedMagCore == nullptr){
             for(const auto& mc : m_magCores)
-                if(CheckCollisionPointRec(m_rightMag, mc->getHitBox()))
+                if( m_attachedMagCore == nullptr && !mc->onSlot()
+                    && (CheckCollisionPointRec(m_rightMag, mc->getHitBox())
+                    || CheckCollisionPointRec({m_rightMag.x-16.f, m_leftMag.y}, mc->getHitBox())))
                     m_attachedMagCore = mc;
         }
+        else if (m_attachedMagCore->onSlot())
+            m_attachedMagCore = nullptr;
         else
             m_attachedMagCore->attach( { m_rightMag.x - 32.f, m_rightMag.y - 16.f } );
     }

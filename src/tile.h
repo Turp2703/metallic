@@ -8,7 +8,10 @@ enum TileType{
     TILE_TEST2,
     TILE_TEST3,
     TILE_LAMP,
-    TILE_WATER
+    TILE_LAMPBROKEN,
+    TILE_WATER,
+    TILE_MAGSLOT,
+    TILE_MAGSLOTACTIVE
 };
 
 class Tile{

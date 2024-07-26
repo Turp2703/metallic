@@ -28,7 +28,7 @@ void SceneGame::update(Game* p_game){
     m_player.update(m_tileMap);
     
     for(const auto& mc : m_tileMap.getMagCores())
-        mc->update();
+        mc->update(m_tileMap);
     
     // GAME OVER
     
@@ -42,10 +42,13 @@ void SceneGame::update(Game* p_game){
         m_tileMap.loadMap(2);
     else if(IsKeyPressed(KEY_FOUR))
         m_tileMap.loadMap(3);
+    else if(IsKeyPressed(KEY_FIVE))
+        m_tileMap.loadMap(4);
 }
 
 void SceneGame::draw(){
     // Background
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKGRAY);
     
     // Effects
     

@@ -31,5 +31,5 @@ class Orb{
         OrbMode m_mode;
         Vector2 m_leftMag;
         Vector2 m_rightMag;
-        MagCore* m_attachedMagCore;
+        MagCore* m_attachedMagCore; //
 };

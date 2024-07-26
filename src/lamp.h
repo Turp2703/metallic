@@ -9,6 +9,7 @@ class Lamp : public Tile{
         ~Lamp();
         void draw(const Texture2D&);
         bool pointInsideLight(Vector2);
+        void breakLamp();
     private:
         int m_height;
         Rectangle m_center;
@@ -18,6 +19,7 @@ class Lamp : public Tile{
         Vector2 m_right1;
         Vector2 m_right2;
         Vector2 m_right3;
+        bool m_isBroken;
 };
 
 

@@ -22,11 +22,14 @@ class TileMap {
         void setLamp(Lamp*);
         void setWater(Tile*);
         void setMagCore(MagCore*);
+        void setMagSlot(Tile*, Lamp*);
+        void activateMagSlot(Tile*);
         void draw();
         void drawWater();
         void loadMap(int);
     private:
         void clearMap();
+        // edit map (addLine, etc...)
         static const int kMapWidth = 32;
         static const int kMapHeight = 18;
         static const int kTileSize = 32;
@@ -36,4 +39,5 @@ class TileMap {
         std::vector<Lamp*> m_lamps;
         std::vector<std::pair<int,int>> m_waterTiles;
         std::vector<MagCore*> m_magCores;
+        std::unordered_map<Tile*,Lamp*> m_magSlots;
 };

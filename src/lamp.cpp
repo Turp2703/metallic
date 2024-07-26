@@ -9,6 +9,7 @@ Lamp::Lamp(Vector2 p_position, TileType p_tileType, bool p_isSolid, int p_height
     , m_right1( { (p_position.x + 1) * kTileSize, (p_position.y + 1) * kTileSize } )
     , m_right2( { (p_position.x + 1) * kTileSize, (p_position.y + 1 + p_height) * kTileSize } )
     , m_right3( { (p_position.x + 2) * kTileSize, (p_position.y + 1 + p_height) * kTileSize } )
+    , m_isBroken(false)
 {
     /* */
 }
@@ -22,13 +23,20 @@ void Lamp::draw(const Texture2D& p_texture){
     
     // Draw responsive light ?
     
-    Color lightColor = {253,249,0,128};
-    DrawTriangle(m_left3, m_left2, m_left1, lightColor); // Vertices go counter-clockwise
-    DrawRectangleRec(m_center, lightColor);
-    DrawTriangle(m_right1, m_right2, m_right3, lightColor);
+    if(!m_isBroken){
+        Color lightColor = {253,249,0,128};
+        DrawTriangle(m_left3, m_left2, m_left1, lightColor); // Vertices go counter-clockwise
+        DrawRectangleRec(m_center, lightColor);
+        DrawTriangle(m_right1, m_right2, m_right3, lightColor);
+    }
 }
 
 bool Lamp::pointInsideLight(Vector2 p_point){
+    if(m_isBroken) return false;
     Vector2 points[] = {m_left1, m_left3, m_left2, m_right2, m_right3, m_right1};
     return CheckCollisionPointPoly(p_point, points, 6);
+}
+
+void Lamp::breakLamp(){
+    m_isBroken = true;
 }
