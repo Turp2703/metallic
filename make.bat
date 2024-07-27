@@ -1,3 +1,3 @@
 cd build
-emmake make -o bin CXXFLAGS="-s NO_EXIT_RUNTIME=1"
+emmake make -o bin CXXFLAGS="-s NO_EXIT_RUNTIME=1" -j
 pause

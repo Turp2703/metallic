@@ -10,7 +10,7 @@ class SceneMenu : public Scene{
         void draw();
         ~SceneMenu();
     private:
-        const Rectangle button = { 300, 225, 200, 100 };
+        const Rectangle button = { 412, 225, 200, 100 };
         Texture2D texLogo;
         bool mouseOverButton;
         bool transitioning;

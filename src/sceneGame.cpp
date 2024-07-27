@@ -48,7 +48,7 @@ void SceneGame::update(Game* p_game){
 
 void SceneGame::draw(){
     // Background
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKGRAY);
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {20, 20, 20, 255});
     
     // Effects
     

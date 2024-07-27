@@ -7,7 +7,7 @@ Orb::Orb(Vector2 p_position, Vector2 p_target)
     , m_orbit(0), m_onFront(true)
     , m_followSpeed(0.5f), m_mode(MODE_ORB)
     , m_leftMag( { p_position.x - 32.f, p_position.y + 16.f } )
-    , m_rightMag( { p_position.x + 64.f, p_position.y + 16.f } )
+    , m_rightMag( { p_position.x + 56.f, p_position.y + 16.f } )
     , m_attachedMagCore(nullptr)
 {
     /* */
@@ -23,10 +23,14 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
         m_target.x += 16.f * cos(m_orbit * DEG2RAD);
         m_target.y += 4.f * sin(2 * m_orbit * DEG2RAD);
     }
-    else if(m_mode == MODE_IRON)
+    else if(m_mode == MODE_IRON){
+        m_target.x -= 4.f;
         m_target.y -= 16.f;
-    else if(m_mode == MODE_CESIUM)
+    }
+    else if(m_mode == MODE_CESIUM){
+        m_target.x -= 4.f;
         m_target.y += 8.f;
+    }
     else if(m_mode == MODE_NEOL){
         m_target.x -= 8.f;
         if(m_attachedMagCore == nullptr){
@@ -42,12 +46,11 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
             m_attachedMagCore->attach( { m_leftMag.x, m_leftMag.y - 16.f } );
     }
     else if(m_mode == MODE_NEOR){
-        m_target.x += 8.f;
         if(m_attachedMagCore == nullptr){
             for(const auto& mc : m_magCores)
                 if( m_attachedMagCore == nullptr && !mc->onSlot()
                     && (CheckCollisionPointRec(m_rightMag, mc->getHitBox())
-                    || CheckCollisionPointRec({m_rightMag.x-16.f, m_leftMag.y}, mc->getHitBox())))
+                    || CheckCollisionPointRec({m_rightMag.x-16.f, m_rightMag.y}, mc->getHitBox())))
                     m_attachedMagCore = mc;
         }
         else if (m_attachedMagCore->onSlot())

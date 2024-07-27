@@ -12,11 +12,13 @@ Player::Player(int p_screenHeight, int p_screenWidth)
     , m_speed(Vector2Zero()), m_acceleration(Vector2Zero())
     , m_canJump(false), m_lastFloorTime(0.0), m_lastJumpTime(0.0)
     , m_cornerTL(m_position)
-    , m_cornerTR({m_position.x+kPlayerSize,m_position.y})
-    , m_cornerBL({m_position.x,m_position.y+kPlayerSize})
-    , m_cornerBR(Vector2AddValue(m_position,kPlayerSize))
+    , m_cornerTR({m_position.x+kPlayerWidth,m_position.y})
+    , m_cornerBL({m_position.x,m_position.y+kPlayerHeight})
+    , m_cornerBR({m_position.x+kPlayerWidth,m_position.y+kPlayerHeight})
     , m_orb( {p_screenWidth / 2.f, p_screenHeight / 2.f}, m_position)
     , m_onLight(false), m_onWater(false), m_cesiumPush(false)
+    , m_chargeIron(kIronMax), m_rechargeIron(false)
+    , m_lastTimeIron(GetTime())
 {
     m_orbTextures[MODE_ORB] = LoadTexture("assets/orb.png");
     m_orbTextures[MODE_IRON] = LoadTexture("assets/iron.png");
@@ -77,15 +79,15 @@ void Player::update(TileMap& p_tileMap){
     newPos.x = m_position.x + m_speed.x * 60.f * delta;
     // Right Collision
     if(m_speed.x > 0){
-        newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerSize + 1), m_position.y );
+        newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerWidth + 1), m_position.y );
         if(newTile != nullptr && newTile->isSolid()){
-            newPos.x = newTile->getPositionWorld().x - kPlayerSize - 1.f;
+            newPos.x = newTile->getPositionWorld().x - kPlayerWidth - 1.f;
             m_speed.x = 0.f;
         }
         else{
-            newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerSize + 1), (m_position.y + kPlayerSize - 1) );
+            newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerWidth + 1), (m_position.y + kPlayerHeight - 1) );
             if(newTile != nullptr && newTile->isSolid()){
-                newPos.x = newTile->getPositionWorld().x - kPlayerSize - 1.f;
+                newPos.x = newTile->getPositionWorld().x - kPlayerWidth - 1.f;
                 m_speed.x = 0.f;
             }
         }
@@ -93,13 +95,13 @@ void Player::update(TileMap& p_tileMap){
     else if (m_speed.x < 0){
         newTile = p_tileMap.getTileWorldPos( (newPos.x - 1), m_position.y );
         if(newTile != nullptr && newTile->isSolid()){
-            newPos.x = newTile->getPositionWorld().x + kPlayerSize + 1.f;
+            newPos.x = newTile->getPositionWorld().x + p_tileMap.getTileSize() + 1.f;
             m_speed.x = 0.f;
         }
         else{
-            newTile = p_tileMap.getTileWorldPos( (newPos.x - 1), (m_position.y + kPlayerSize - 1) );
+            newTile = p_tileMap.getTileWorldPos( (newPos.x - 1), (m_position.y + kPlayerHeight - 1) );
             if(newTile != nullptr && newTile->isSolid()){
-                newPos.x = newTile->getPositionWorld().x + kPlayerSize + 1.f;
+                newPos.x = newTile->getPositionWorld().x + p_tileMap.getTileSize() + 1.f;
                 m_speed.x = 0.f;
             }
         }
@@ -132,17 +134,17 @@ void Player::update(TileMap& p_tileMap){
     if(m_speed.y > -0.21f && m_speed.y < 0.21f) 
         m_speed.y = 0.0f;
     // Falling collision
-    newTile = p_tileMap.getTileWorldPos( newPos.x, (newPos.y + kPlayerSize));
+    newTile = p_tileMap.getTileWorldPos( newPos.x, (newPos.y + kPlayerHeight));
     if(newTile != nullptr && newTile->isSolid()){
-        newPos.y = newTile->getPositionWorld().y - kPlayerSize;
+        newPos.y = newTile->getPositionWorld().y - kPlayerHeight;
         m_speed.y = 0.f;
         m_canJump = true;
         m_lastFloorTime = GetTime();
     }
     else{
-        newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerSize), (newPos.y + kPlayerSize) );
+        newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerWidth), (newPos.y + kPlayerHeight) );
         if(newTile != nullptr && newTile->isSolid()){
-            newPos.y = newTile->getPositionWorld().y - kPlayerSize;
+            newPos.y = newTile->getPositionWorld().y - kPlayerHeight;
             m_speed.y = 0.f;
             m_canJump = true;
             m_lastFloorTime = GetTime();
@@ -152,13 +154,13 @@ void Player::update(TileMap& p_tileMap){
     // Jumping collision
     newTile = p_tileMap.getTileWorldPos( newPos.x, newPos.y );
     if(newTile != nullptr && newTile->isSolid()){
-        newPos.y = newTile->getPositionWorld().y + kPlayerSize;
+        newPos.y = newTile->getPositionWorld().y + kPlayerHeight;
         m_speed.y = 0.f;
     }
     else{
-        newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerSize), newPos.y );
+        newTile = p_tileMap.getTileWorldPos( (newPos.x + kPlayerWidth), newPos.y );
         if(newTile != nullptr && newTile->isSolid()){
-            newPos.y = newTile->getPositionWorld().y + kPlayerSize;
+            newPos.y = newTile->getPositionWorld().y + kPlayerHeight;
             m_speed.y = 0.f;
         }
     }
@@ -166,9 +168,9 @@ void Player::update(TileMap& p_tileMap){
     // Update position
     m_position = newPos;
     m_cornerTL = m_position;
-    m_cornerTR = {m_position.x + kPlayerSize, m_position.y};
-    m_cornerBL = {m_position.x, m_position.y + kPlayerSize};
-    m_cornerBR = Vector2AddValue(m_position, kPlayerSize);
+    m_cornerTR = {m_position.x + kPlayerWidth, m_position.y};
+    m_cornerBL = {m_position.x, m_position.y + kPlayerHeight};
+    m_cornerBR = {m_position.x + kPlayerWidth, m_position.y + kPlayerHeight};
     
     // Light Collision
     m_onLight = false;
@@ -182,9 +184,25 @@ void Player::update(TileMap& p_tileMap){
          }
     }
     
+    // Iron Charge
+    m_rechargeIron = GetTime() - m_lastTimeIron >= kIronCooldown;
+    if(m_rechargeIron && m_chargeIron < kIronMax){
+        if(kIronMax - m_chargeIron >= kIronRecover)
+            m_chargeIron += kIronRecover;
+        else
+            m_chargeIron += kIronMax - m_chargeIron;
+    }
+    
     // Orb
-    if(IsKeyDown(KEY_W))
-        m_orb.setMode(MODE_IRON);
+    if(IsKeyDown(KEY_W)){
+        m_lastTimeIron = GetTime();
+        if(m_chargeIron > 0){
+            m_orb.setMode(MODE_IRON);
+            m_chargeIron -= kIronConsumption;
+        }
+        else
+            m_orb.setMode(MODE_ORB);
+    }
     else if(IsKeyDown(KEY_K))
         m_orb.setMode(MODE_CESIUM);
     else if(IsKeyDown(KEY_L))
@@ -202,20 +220,27 @@ void Player::draw(TileMap& p_tileMap){
         int i = 0;
         Tile* t = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y);
         while(t == nullptr || !t->isSolid())
-            t = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y + ++i * kPlayerSize);
+            t = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y + ++i * kPlayerHeight);
         float lightCoverHeight = t->getPositionWorld().y - m_position.y;
         
         
-        DrawRectangleV(m_position, {kPlayerSize * 1.f, lightCoverHeight}, DARKGRAY);
+        DrawRectangleV(m_position, {kPlayerWidth * 1.f, lightCoverHeight}, {20, 20, 20, 255});
     }
     
     if(m_orb.onFront()){
-        DrawRectangleV(m_position, {kPlayerSize,kPlayerSize}, WHITE);
+        DrawRectangleV(m_position, {kPlayerWidth,kPlayerHeight}, WHITE);
         m_orb.draw(m_orbTextures[m_orb.getMode()]);
     }
     else{
         m_orb.draw(m_orbTextures[m_orb.getMode()]);
-        DrawRectangleV(m_position, {kPlayerSize,kPlayerSize}, WHITE);
+        DrawRectangleV(m_position, {kPlayerWidth,kPlayerHeight}, WHITE);
+    }
+    
+    // Iron Indicator
+    if(m_chargeIron < kIronMax){
+        DrawRectangle(m_position.x - 30, m_position.y + 32 - m_chargeIron * 32 / kIronMax
+                    , 20, m_chargeIron * 32 / kIronMax , WHITE);
+        DrawRectangleLines(m_position.x - 30, m_position.y, 20, 32, GRAY);
     }
     
     // Debug
