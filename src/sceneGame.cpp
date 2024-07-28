@@ -9,12 +9,11 @@
 
 SceneGame::SceneGame(int p_screenWidth, int p_screenHeight)
     : Scene(p_screenWidth, p_screenHeight)
+    , kScreenWidth(p_screenWidth), kScreenHeight(p_screenHeight)
     , m_player(p_screenHeight, p_screenWidth)
+    , m_currentLevel(1)
 {
-    // Init objects on initializer list
-    
-    // Object Calls
-    m_tileMap.loadMap(1);
+    m_tileMap.loadMap(m_currentLevel);
     
     // Textures
     //m_texBlock = LoadTexture("assets/block.png");
@@ -30,20 +29,47 @@ void SceneGame::update(Game* p_game){
     for(const auto& mc : m_tileMap.getMagCores())
         mc->update(m_tileMap);
     
-    // GAME OVER
+    // Beat Level
+    if(m_player.getX() > kScreenWidth && m_currentLevel < kLastLevel){
+        m_player.restart();
+        m_tileMap.loadMap(++m_currentLevel);
+    }
     
+    // GAME OVER
+    if(!m_player.isAlive()){
+        if(IsKeyPressed(KEY_R)){
+            // PlaySound(soundStart);
+            m_player.restart();
+            m_tileMap.loadMap(m_currentLevel);
+        }
+        else if(IsKeyPressed(KEY_T)){
+            p_game->changeScene(new SceneMenu(m_screenWidth, m_screenHeight));
+        }
+    }
     
     // DEBUG
     if(IsKeyPressed(KEY_ONE))
         p_game->changeScene(new SceneMenu(m_screenWidth, m_screenHeight));
-    else if(IsKeyPressed(KEY_TWO))
-        m_tileMap.loadMap(1);
-    else if(IsKeyPressed(KEY_THREE))
-        m_tileMap.loadMap(2);
-    else if(IsKeyPressed(KEY_FOUR))
-        m_tileMap.loadMap(3);
-    else if(IsKeyPressed(KEY_FIVE))
-        m_tileMap.loadMap(4);
+    else if(IsKeyPressed(KEY_TWO)){
+        m_currentLevel = 1;
+        m_tileMap.loadMap(m_currentLevel);
+        m_player.restart();
+    }
+    else if(IsKeyPressed(KEY_THREE)){
+        m_currentLevel = 2;
+        m_tileMap.loadMap(m_currentLevel);
+        m_player.restart();
+    }
+    else if(IsKeyPressed(KEY_FOUR)){
+        m_currentLevel = 3;
+        m_tileMap.loadMap(m_currentLevel);
+        m_player.restart();
+    }
+    else if(IsKeyPressed(KEY_FIVE)){
+        m_currentLevel = 4;
+        m_tileMap.loadMap(m_currentLevel);
+        m_player.restart();
+    }
 }
 
 void SceneGame::draw(){
@@ -57,7 +83,17 @@ void SceneGame::draw(){
     m_player.draw(m_tileMap);
     m_tileMap.drawWater();
     
-    // UI
+    // Game Over
+    if(!m_player.isAlive()){
+        const char *gameOverText = "GAME OVER";
+        const char *restartText = "PRESS [R] TO RESTART";
+        const char *menuText = "PRESS [T] TO RETURN";
+        DrawRectangle(kScreenWidth / 2 - MeasureText(restartText, 20) / 2 - 15, kScreenHeight / 2 - 25, MeasureText(restartText, 20) + 30, 130, GREEN);
+        DrawRectangle(kScreenWidth / 2 - MeasureText(restartText, 20) / 2 - 10, kScreenHeight / 2 - 20, MeasureText(restartText, 20) + 20, 120, BLACK);
+        DrawText(gameOverText, kScreenWidth / 2 - MeasureText(gameOverText, 20) / 2, kScreenHeight / 2, 20, GREEN);
+        DrawText(restartText, kScreenWidth / 2 - MeasureText(restartText, 20) / 2, kScreenHeight / 2 + 30, 20, GREEN);
+        DrawText(menuText, kScreenWidth / 2 - MeasureText(menuText, 20) / 2, kScreenHeight / 2 + 60, 20, GREEN);
+    }
     
     // DEBUG
     DrawFPS(10, 10);

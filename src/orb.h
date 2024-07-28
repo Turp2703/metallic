@@ -21,6 +21,7 @@ class Orb{
         void setTarget(Vector2);
         OrbMode getMode() const;
         void setMode(OrbMode);
+        void restart();
     private:
         const int kOrbitSpeed = 2;
         Vector2 m_position;
@@ -31,5 +32,5 @@ class Orb{
         OrbMode m_mode;
         Vector2 m_leftMag;
         Vector2 m_rightMag;
-        MagCore* m_attachedMagCore; //
+        MagCore* m_attachedMagCore;
 };

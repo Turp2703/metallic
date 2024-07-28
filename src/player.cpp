@@ -4,11 +4,11 @@
 #include "raymath.h"
 
 // Debug
-#include <string>
+// #include <string>
 
 Player::Player(int p_screenHeight, int p_screenWidth)
     : kScreenHeight(p_screenHeight), kScreenWidth(p_screenWidth)
-    , m_position({ p_screenWidth / 2.f, p_screenHeight / 2.f })
+    , m_position({ 36.f, kScreenHeight - 32.f*4 })
     , m_speed(Vector2Zero()), m_acceleration(Vector2Zero())
     , m_canJump(false), m_lastFloorTime(0.0), m_lastJumpTime(0.0)
     , m_cornerTL(m_position)
@@ -18,7 +18,7 @@ Player::Player(int p_screenHeight, int p_screenWidth)
     , m_orb( {p_screenWidth / 2.f, p_screenHeight / 2.f}, m_position)
     , m_onLight(false), m_onWater(false), m_cesiumPush(false)
     , m_chargeIron(kIronMax), m_rechargeIron(false)
-    , m_lastTimeIron(GetTime())
+    , m_lastTimeIron(GetTime()), m_isAlive(true)
 {
     m_orbTextures[MODE_ORB] = LoadTexture("assets/orb.png");
     m_orbTextures[MODE_IRON] = LoadTexture("assets/iron.png");
@@ -166,11 +166,13 @@ void Player::update(TileMap& p_tileMap){
     }
     
     // Update position
-    m_position = newPos;
-    m_cornerTL = m_position;
-    m_cornerTR = {m_position.x + kPlayerWidth, m_position.y};
-    m_cornerBL = {m_position.x, m_position.y + kPlayerHeight};
-    m_cornerBR = {m_position.x + kPlayerWidth, m_position.y + kPlayerHeight};
+    if(m_isAlive){
+        m_position = newPos;
+        m_cornerTL = m_position;
+        m_cornerTR = {m_position.x + kPlayerWidth, m_position.y};
+        m_cornerBL = {m_position.x, m_position.y + kPlayerHeight};
+        m_cornerBR = {m_position.x + kPlayerWidth, m_position.y + kPlayerHeight};
+    }
     
     // Light Collision
     m_onLight = false;
@@ -180,6 +182,7 @@ void Player::update(TileMap& p_tileMap){
          || lamp->pointInsideLight(m_cornerBL)
          || lamp->pointInsideLight(m_cornerBR)){
              m_onLight = true;
+             m_isAlive = m_orb.getMode() == MODE_IRON;
              break;
          }
     }
@@ -194,24 +197,27 @@ void Player::update(TileMap& p_tileMap){
     }
     
     // Orb
+    OrbMode newMode;
     if(IsKeyDown(KEY_W)){
         m_lastTimeIron = GetTime();
         if(m_chargeIron > 0){
-            m_orb.setMode(MODE_IRON);
+            newMode = MODE_IRON;
             m_chargeIron -= kIronConsumption;
         }
         else
-            m_orb.setMode(MODE_ORB);
+            newMode = MODE_ORB;
     }
     else if(IsKeyDown(KEY_K))
-        m_orb.setMode(MODE_CESIUM);
+        newMode = MODE_CESIUM;
     else if(IsKeyDown(KEY_L))
-        m_orb.setMode(MODE_NEOR);
+        newMode = MODE_NEOR;
     else if(IsKeyDown(KEY_J))
-        m_orb.setMode(MODE_NEOL);
+        newMode = MODE_NEOL;
     else
-        m_orb.setMode(MODE_ORB);
+        newMode = MODE_ORB;
     m_orb.setTarget(m_position);
+    if(m_isAlive)
+        m_orb.setMode(newMode);
     m_orb.update(p_tileMap.getMagCores());
 }
 
@@ -237,21 +243,40 @@ void Player::draw(TileMap& p_tileMap){
     }
     
     // Iron Indicator
-    if(m_chargeIron < kIronMax){
+    if(m_isAlive && m_chargeIron < kIronMax){
         DrawRectangle(m_position.x - 30, m_position.y + 32 - m_chargeIron * 32 / kIronMax
                     , 20, m_chargeIron * 32 / kIronMax , WHITE);
         DrawRectangleLines(m_position.x - 30, m_position.y, 20, 32, GRAY);
     }
     
     // Debug
-    DrawText(std::to_string(m_speed.y).c_str(), 50, 30, 20, WHITE);
-    DrawText(std::to_string(m_canJump).c_str(), 50, 50, 20, WHITE);
-    DrawText(std::to_string(m_onLight).c_str(), 50, 70, 20, WHITE);
-    DrawText(std::to_string(m_onWater).c_str(), 50, 90, 20, WHITE);
-    DrawCircleV(m_cornerTL, 3.f, RED);
-    DrawCircleV(m_cornerTR, 3.f, RED);
-    DrawCircleV(m_cornerBL, 3.f, RED);
-    DrawCircleV(m_cornerBR, 3.f, RED);
+    // DrawText(std::to_string(m_speed.y).c_str(), 50, 30, 20, WHITE);
+    // DrawText(std::to_string(m_canJump).c_str(), 50, 50, 20, WHITE);
+    // DrawText(std::to_string(m_onLight).c_str(), 50, 70, 20, WHITE);
+    // DrawText(std::to_string(m_onWater).c_str(), 50, 90, 20, WHITE);
+    // DrawCircleV(m_cornerTL, 3.f, RED);
+    // DrawCircleV(m_cornerTR, 3.f, RED);
+    // DrawCircleV(m_cornerBL, 3.f, RED);
+    // DrawCircleV(m_cornerBR, 3.f, RED);
+}
+
+bool Player::isAlive() const{
+    return m_isAlive;
+}
+
+void Player::restart(){
+    m_isAlive = true;
+    m_position = { 36.f, kScreenHeight - 32.f*4 };
+    m_chargeIron = kIronMax;
+    m_orb.restart();
+    m_speed = Vector2Zero();
+    m_canJump = false;
+    m_lastFloorTime = 0.0;
+    m_lastJumpTime = 0.0;
+}
+
+float Player::getX() const{
+    return m_position.x;
 }
 
 Player::~Player(){

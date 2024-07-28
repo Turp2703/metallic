@@ -11,9 +11,14 @@ class SceneGame : public Scene{
         void draw();
         ~SceneGame();
     private:        
+        const int kScreenWidth;
+        const int kScreenHeight;
+        const int kLastLevel = 4;
+    
         // Objects
         Player m_player;
         TileMap m_tileMap;
+        int m_currentLevel;
         
         // Textures
         //Texture2D m_texBlock;

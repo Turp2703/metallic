@@ -11,6 +11,9 @@ class Player{
         Player(int, int);
         void update(TileMap&);
         void draw(TileMap&);
+        bool isAlive() const;
+        void restart();
+        float getX() const;
         ~Player();
     private:
         const int kScreenHeight;
@@ -47,4 +50,5 @@ class Player{
         int m_chargeIron;
         bool m_rechargeIron;
         double m_lastTimeIron;
+        bool m_isAlive;
 };

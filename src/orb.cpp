@@ -99,3 +99,7 @@ void Orb::setMode(OrbMode p_newMode){
         m_attachedMagCore = nullptr;
     }
 }
+
+void Orb::restart(){
+    m_attachedMagCore = nullptr;
+}
