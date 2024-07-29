@@ -28,8 +28,12 @@ class TileMap {
         void drawWater();
         void loadMap(int);
     private:
+        void addBlockPlatform(float p_posX, float p_posY, int p_length, bool p_vertical);
+        void addBlockRectangle(float p_posX, float p_posY, int p_width, int p_height, bool p_fill);
+        void addWaterPool(float p_posX, float p_posY, int p_length, bool p_onFloor);
+        void addExit(int p_posY);
+        void addFillRectOnFloor(float p_posX, float p_posY, int p_width, int p_height);
         void clearMap();
-        // edit map (addLine, etc...)
         static const int kMapWidth = 32;
         static const int kMapHeight = 18;
         static const int kTileSize = 32;

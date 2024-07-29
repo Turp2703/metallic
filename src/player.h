@@ -28,7 +28,7 @@ class Player{
         const float kGravity = 0.5f; // 0.5f
         const double kBufferTime = 0.1; // 0.1
         const double kCoyoteTime = 0.05; // 0.05
-        const int kIronMax = 7000; // 7000
+        const int kIronMax = 4000; // 4000, just enough for 2 light height
         const int kIronCooldown = 1; // 1
         const int kIronRecover = 200; // 200
         const int kIronConsumption = 100; // 100

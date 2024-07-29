@@ -224,12 +224,25 @@ void Player::update(TileMap& p_tileMap){
 void Player::draw(TileMap& p_tileMap){
     if(m_onLight){
         int i = 0;
-        Tile* t = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y);
-        while(t == nullptr || !t->isSolid())
-            t = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y + ++i * kPlayerHeight);
-        float lightCoverHeight = t->getPositionWorld().y - m_position.y;
-        
-        
+        Tile* tLeft = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y);
+        Tile* tRight = p_tileMap.getTileWorldPos(m_cornerBR.x, m_cornerBR.y);
+        float lightCoverHeight = 0.f;
+        bool stop = false;
+        while(!stop){
+            tLeft = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y + i * kPlayerHeight);
+            tRight = p_tileMap.getTileWorldPos(m_cornerBR.x, m_cornerBR.y + i * kPlayerHeight);
+            if(tLeft != nullptr && tLeft->isSolid()){
+                stop = true;
+                lightCoverHeight = tLeft->getPositionWorld().y - m_position.y;
+            }
+            else if(tRight != nullptr && tRight->isSolid()){
+                stop = true;
+                lightCoverHeight = tRight->getPositionWorld().y - m_position.y;
+            }
+            else{
+                i++;
+            }
+        }
         DrawRectangleV(m_position, {kPlayerWidth * 1.f, lightCoverHeight}, {20, 20, 20, 255});
     }
     

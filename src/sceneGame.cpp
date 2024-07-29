@@ -56,17 +56,12 @@ void SceneGame::update(Game* p_game){
         m_player.restart();
     }
     else if(IsKeyPressed(KEY_THREE)){
-        m_currentLevel = 2;
+        if(m_currentLevel > 1) m_currentLevel--;
         m_tileMap.loadMap(m_currentLevel);
         m_player.restart();
     }
     else if(IsKeyPressed(KEY_FOUR)){
-        m_currentLevel = 3;
-        m_tileMap.loadMap(m_currentLevel);
-        m_player.restart();
-    }
-    else if(IsKeyPressed(KEY_FIVE)){
-        m_currentLevel = 4;
+        if(m_currentLevel < kLastLevel) m_currentLevel++;
         m_tileMap.loadMap(m_currentLevel);
         m_player.restart();
     }
@@ -75,6 +70,8 @@ void SceneGame::update(Game* p_game){
 void SceneGame::draw(){
     // Background
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {20, 20, 20, 255});
+    
+    // Draw Level Guides
     
     // Effects
     
