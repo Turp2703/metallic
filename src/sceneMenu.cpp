@@ -31,8 +31,8 @@ void SceneMenu::update(Game* p_game){
     }
     
     // DEBUG
-    if(IsKeyPressed(KEY_TWO))
-        p_game->changeScene(new SceneGame(m_screenWidth, m_screenHeight));
+    // if(IsKeyPressed(KEY_TWO))
+        // p_game->changeScene(new SceneGame(m_screenWidth, m_screenHeight));
 }
 
 void SceneMenu::draw(){
@@ -57,8 +57,8 @@ void SceneMenu::draw(){
     // Guide
     DrawRectangleLines(15, 350, 984, 191, RAYWHITE);
     DrawLine(697, 350, 697, 539, RAYWHITE);
-    DrawText("QUICK GUIDE -> Light kills you, avoid it.", 25, 360, 24, RAYWHITE);
-    DrawText("Some lamps can be overloaded by energized slots.", 25, 390, 24, RAYWHITE);
+    DrawText("QUICK GUIDE -> Light is bad, avoid it.", 25, 360, 24, RAYWHITE);
+    DrawText("Some lamps can be overloaded by power modules.", 25, 390, 24, RAYWHITE);
     DrawText("You can transmute your orb into:", 25, 420, 24, RAYWHITE);
     DrawText(" - IRON that covers you from the light", 25, 450, 24, RAYWHITE);
     DrawText(" - NEODYMIUM that magnetically attracts other metals", 25, 480, 24, RAYWHITE);

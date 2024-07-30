@@ -13,7 +13,7 @@ class SceneGame : public Scene{
     private:        
         const int kScreenWidth;
         const int kScreenHeight;
-        const int kLastLevel = 10;
+        const int kLastLevel = 6;
     
         // Objects
         Player m_player;
@@ -25,5 +25,5 @@ class SceneGame : public Scene{
         Texture2D m_texParticle;
 
         // Sounds
-        //Sound soundStart;
+        Sound m_soundStart;
 };

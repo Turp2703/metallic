@@ -165,7 +165,6 @@ void TileMap::loadMap(int mapNumber){
         addBlockPlatform(21, 11, 4, false);
         addBlockPlatform(14, 11, 4, false);
         addBlockPlatform(7, 11, 4, false);
-        addBlockPlatform(2, 8, 1, false);
         addBlockPlatform(3, 10, 2, false);
         addBlockPlatform(7, 7, 4, false);
         addBlockPlatform(14, 5, 1, false);
@@ -253,22 +252,10 @@ void TileMap::loadMap(int mapNumber){
     // Tight spot between lamps
     // Double pool jump with module
     
-    ////////// old //////////
     else if(mapNumber == 6){
-        for(int i = 1; i < kMapWidth - 1; i++)
-            setTile(new Tile({i*1.f,kMapHeight-2.f}, TILE_BASE, true));
-        for(int i = 3; i < 7; i++)
-            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
-        for(int i = 7; i < 10; i++)
-            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
-        for(int i = 22; i < 29; i++)
-            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
-        for(int i = 22; i < 29; i++)
-            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
-        for(int i = 25; i < 28; i++)
-            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
-        setLamp(new Lamp({5.f,kMapHeight-5.f}, TILE_LAMP, true, 2));
+        // TODO
     }
+    ////////// old //////////
     else if(mapNumber == 7){
         addBlockPlatform(2, 2, 4, false);
         addBlockPlatform(2, 3, 2, true);

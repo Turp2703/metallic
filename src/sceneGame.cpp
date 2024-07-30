@@ -20,7 +20,7 @@ SceneGame::SceneGame(int p_screenWidth, int p_screenHeight)
     m_texParticle = LoadTexture("assets/particle.png");
     
     // Sounds
-    //soundStart = LoadSound("assets/start.wav");
+    m_soundStart = LoadSound("assets/start.wav");
 }
 
 void SceneGame::update(Game* p_game){
@@ -39,7 +39,7 @@ void SceneGame::update(Game* p_game){
     // GAME OVER
     if(!m_player.isAlive()){
         if(IsKeyPressed(KEY_R)){
-            // PlaySound(soundStart);
+            PlaySound(m_soundStart);
             m_player.restart();
             m_tileMap.loadMap(m_currentLevel);
         }
@@ -49,23 +49,23 @@ void SceneGame::update(Game* p_game){
     }
     
     // DEBUG
-    if(IsKeyPressed(KEY_ONE))
-        p_game->changeScene(new SceneMenu(m_screenWidth, m_screenHeight));
-    else if(IsKeyPressed(KEY_TWO)){
-        m_currentLevel = 1;
-        m_tileMap.loadMap(m_currentLevel);
-        m_player.restart();
-    }
-    else if(IsKeyPressed(KEY_THREE)){
-        if(m_currentLevel > 1) m_currentLevel--;
-        m_tileMap.loadMap(m_currentLevel);
-        m_player.restart();
-    }
-    else if(IsKeyPressed(KEY_FOUR)){
-        if(m_currentLevel < kLastLevel) m_currentLevel++;
-        m_tileMap.loadMap(m_currentLevel);
-        m_player.restart();
-    }
+    // if(IsKeyPressed(KEY_ONE))
+        // p_game->changeScene(new SceneMenu(m_screenWidth, m_screenHeight));
+    // else if(IsKeyPressed(KEY_TWO)){
+        // m_currentLevel = 1;
+        // m_tileMap.loadMap(m_currentLevel);
+        // m_player.restart();
+    // }
+    // else if(IsKeyPressed(KEY_THREE)){
+        // if(m_currentLevel > 1) m_currentLevel--;
+        // m_tileMap.loadMap(m_currentLevel);
+        // m_player.restart();
+    // }
+    // else if(IsKeyPressed(KEY_FOUR)){
+        // if(m_currentLevel < kLastLevel) m_currentLevel++;
+        // m_tileMap.loadMap(m_currentLevel);
+        // m_player.restart();
+    // }
 }
 
 void SceneGame::draw(){
@@ -73,6 +73,41 @@ void SceneGame::draw(){
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {20, 20, 20, 255});
     
     // Draw Level Guides
+    if(m_currentLevel == 1){
+        DrawRectangleLines(64, 64, 192, 54, PURPLE);
+        DrawText("[A] & [D] to walk", 68, 68, 22, PURPLE);
+        DrawText("[Space] to jump", 68, 94, 22, PURPLE);
+    }
+    else if(m_currentLevel == 2){
+        DrawRectangleLines(64, 64, 210, 54, PURPLE);
+        DrawText("Touching the light", 68, 68, 22, PURPLE);
+        DrawText("will make you lose", 72, 94, 22, PURPLE);
+    }
+    else if(m_currentLevel == 3){
+        DrawRectangleLines(64, 64, 340, 54, PURPLE);
+        DrawText("[W] to transmute the orb into" , 68, 68, 22, PURPLE);
+        DrawText("iron and cover from the light", 70, 94, 22, PURPLE);
+    }
+    else if(m_currentLevel == 4){
+        DrawRectangleLines(64, 64, 512, 54, PURPLE);
+        DrawText("[K] to transmute the orb into cesium, a " , 68, 68, 22, PURPLE);
+        DrawText("metal that explodes upon contact with water", 70, 94, 22, PURPLE);
+    }
+    else if(m_currentLevel == 5){
+        DrawRectangleLines(356, 64, 184, 72, PURPLE);
+        DrawText("[J]&[L] to transmute" , 364, 68, 18, PURPLE);
+        DrawText("the orb into a" , 389, 90, 18, PURPLE);
+        DrawText("neodymium magnet" , 375, 112, 18, PURPLE);
+        DrawRectangleLines(356, 140, 184, 72, PURPLE);
+        DrawText("You can overload" , 370, 144, 18, PURPLE);
+        DrawText("certain lamps by" , 375, 166, 18, PURPLE);
+        DrawText("connecting modules" , 368, 188, 18, PURPLE);
+    }
+    else if(m_currentLevel == 6){
+        DrawRectangleLines(64, 64, 215, 54, PURPLE);
+        DrawText("That's it for now" , 68, 68, 22, PURPLE);
+        DrawText("5 more levels soon", 68, 94, 22, PURPLE);
+    }
     
     // Effects
     m_player.drawEffects(m_texParticle);
@@ -95,7 +130,7 @@ void SceneGame::draw(){
     }
     
     // DEBUG
-    DrawFPS(10, 10);
+    // DrawFPS(10, 10);
     // for(unsigned int i = 0; i < asteroids.size(); i++)
         // DrawText(std::to_string(0).c_str(), 10 * i, 30, 20, WHITE);
 }
@@ -106,5 +141,5 @@ SceneGame::~SceneGame(){
     UnloadTexture(m_texParticle);
     
     // Sounds
-    //UnloadSound(soundStart);
+    UnloadSound(m_soundStart);
 }
