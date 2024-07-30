@@ -29,6 +29,10 @@ Player::Player(int p_screenHeight, int p_screenWidth)
 }
 
 void Player::update(TileMap& p_tileMap){
+    // FIX WINDOW MOVING
+    if(m_position.y < 5 || m_position.y > GetScreenHeight() + 5)
+        restart();
+    
     ///// PARTICLES /////
     for (auto it = m_jumpParticles.begin(); it != m_jumpParticles.end();){
         if (!it->isAlive()){
