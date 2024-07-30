@@ -1,5 +1,6 @@
 #include "particle.h"
 
+#include <algorithm>
 #include <cmath>
 
 // Constructors
