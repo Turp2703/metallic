@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 #include "magCore.h"
+#include "particle.h"
 #include <vector>
 
 enum OrbMode{
@@ -17,6 +18,7 @@ class Orb{
         Orb(Vector2, Vector2);
         void update(const std::vector<MagCore*>&);
         void draw(Texture2D&);
+        void drawEffects(Texture2D&);
         bool onFront() const;
         void setTarget(Vector2);
         OrbMode getMode() const;
@@ -33,4 +35,5 @@ class Orb{
         Vector2 m_leftMag;
         Vector2 m_rightMag;
         MagCore* m_attachedMagCore;
+        std::vector<Particle> m_neoParticles;
 };

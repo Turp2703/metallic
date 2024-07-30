@@ -16,7 +16,8 @@ SceneGame::SceneGame(int p_screenWidth, int p_screenHeight)
     m_tileMap.loadMap(m_currentLevel);
     
     // Textures
-    //m_texBlock = LoadTexture("assets/block.png");
+    m_texPlayer = LoadTexture("assets/player.png");
+    m_texParticle = LoadTexture("assets/particle.png");
     
     // Sounds
     //soundStart = LoadSound("assets/start.wav");
@@ -74,10 +75,11 @@ void SceneGame::draw(){
     // Draw Level Guides
     
     // Effects
+    m_player.drawEffects(m_texParticle);
     
     // Objects
-    m_tileMap.draw();
-    m_player.draw(m_tileMap);
+    m_tileMap.draw(m_texParticle);
+    m_player.draw(m_tileMap, m_texPlayer);
     m_tileMap.drawWater();
     
     // Game Over
@@ -100,7 +102,8 @@ void SceneGame::draw(){
 
 SceneGame::~SceneGame(){
     // Textures
-    //UnloadTexture(m_texBlock);
+    UnloadTexture(m_texPlayer);
+    UnloadTexture(m_texParticle);
     
     // Sounds
     //UnloadSound(soundStart);

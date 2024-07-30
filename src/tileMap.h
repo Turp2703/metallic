@@ -24,7 +24,7 @@ class TileMap {
         void setMagCore(MagCore*);
         void setMagSlot(Tile*, Lamp*);
         void activateMagSlot(Tile*);
-        void draw();
+        void draw(Texture2D&);
         void drawWater();
         void loadMap(int);
     private:

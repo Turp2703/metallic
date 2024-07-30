@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "tileMap.h"
 #include "orb.h"
+#include "particle.h"
 #include <vector>
 #include <unordered_map>
 
@@ -10,7 +11,8 @@ class Player{
     public:
         Player(int, int);
         void update(TileMap&);
-        void draw(TileMap&);
+        void draw(TileMap&, Texture2D&);
+        void drawEffects(Texture2D&);
         bool isAlive() const;
         void restart();
         float getX() const;
@@ -51,4 +53,8 @@ class Player{
         bool m_rechargeIron;
         double m_lastTimeIron;
         bool m_isAlive;
+        float m_drawSourceWidth;
+        std::vector<Particle> m_jumpParticles;
+        std::vector<Particle> m_cesiumParticles;
+        std::vector<Particle> m_deathParticles;
 };

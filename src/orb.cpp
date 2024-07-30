@@ -14,6 +14,16 @@ Orb::Orb(Vector2 p_position, Vector2 p_target)
 }
 
 void Orb::update(const std::vector<MagCore*>& m_magCores){
+    for (auto it = m_neoParticles.begin(); it != m_neoParticles.end();){
+        if (!it->isAlive()){
+            it = m_neoParticles.erase(it);
+        }
+        else {
+            it->update();
+            it++;
+        }
+    }
+    
     if(m_mode == MODE_ORB){
         m_orbit += kOrbitSpeed;
         if(m_orbit > 359) 
@@ -44,6 +54,7 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
             m_attachedMagCore = nullptr;
         else
             m_attachedMagCore->attach( { m_leftMag.x, m_leftMag.y - 16.f } );
+        m_neoParticles.push_back(Particle( {m_leftMag.x, m_leftMag.y+GetRandomValue(-12,12)}, 180, 0.2));
     }
     else if(m_mode == MODE_NEOR){
         if(m_attachedMagCore == nullptr){
@@ -57,6 +68,7 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
             m_attachedMagCore = nullptr;
         else
             m_attachedMagCore->attach( { m_rightMag.x - 32.f, m_rightMag.y - 16.f } );
+        m_neoParticles.push_back(Particle( {m_rightMag.x, m_rightMag.y+GetRandomValue(-12,12)}, 0, 0.2));
     }
     m_position = Vector2Lerp(m_position, m_target, m_followSpeed);
     m_leftMag  = { m_position.x - 32.f, m_position.y + 16.f };
@@ -66,10 +78,14 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
 void Orb::draw(Texture2D& p_texture){
     DrawTextureV(p_texture, m_position, WHITE);
     
-    if(m_mode == MODE_NEOL)
-        DrawCircleV(m_leftMag, 3, RED);
-    else if(m_mode == MODE_NEOR)
-        DrawCircleV(m_rightMag, 3, RED);
+    // if(m_mode == MODE_NEOL)
+        // DrawCircleV(m_leftMag, 3, RED);
+    // else if(m_mode == MODE_NEOR)
+        // DrawCircleV(m_rightMag, 3, RED);
+}
+void Orb::drawEffects(Texture2D& p_particleTexture){
+    for(auto& particle : m_neoParticles)
+        particle.draw(p_particleTexture, {0,200,200,100}, false);
 }
 
 bool Orb::onFront() const{

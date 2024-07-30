@@ -4,7 +4,7 @@
 #include "raymath.h"
 
 // Debug
-// #include <string>
+// #include <iostream>
 
 Player::Player(int p_screenHeight, int p_screenWidth)
     : kScreenHeight(p_screenHeight), kScreenWidth(p_screenWidth)
@@ -19,6 +19,7 @@ Player::Player(int p_screenHeight, int p_screenWidth)
     , m_onLight(false), m_onWater(false), m_cesiumPush(false)
     , m_chargeIron(kIronMax), m_rechargeIron(false)
     , m_lastTimeIron(GetTime()), m_isAlive(true)
+    , m_drawSourceWidth(24.f)
 {
     m_orbTextures[MODE_ORB] = LoadTexture("assets/orb.png");
     m_orbTextures[MODE_IRON] = LoadTexture("assets/iron.png");
@@ -28,6 +29,35 @@ Player::Player(int p_screenHeight, int p_screenWidth)
 }
 
 void Player::update(TileMap& p_tileMap){
+    ///// PARTICLES /////
+    for (auto it = m_jumpParticles.begin(); it != m_jumpParticles.end();){
+        if (!it->isAlive()){
+            it = m_jumpParticles.erase(it);
+        }
+        else {
+            it->update();
+            it++;
+        }
+    }
+    for (auto it = m_cesiumParticles.begin(); it != m_cesiumParticles.end();){
+        if (!it->isAlive()){
+            it = m_cesiumParticles.erase(it);
+        }
+        else {
+            it->update();
+            it++;
+        }
+    }
+    for (auto it = m_deathParticles.begin(); it != m_deathParticles.end();){
+        if (!it->isAlive()){
+            it = m_deathParticles.erase(it);
+        }
+        else {
+            it->update();
+            it++;
+        }
+    }
+    
     ///// MOVEMENT /////
     Vector2 newPos;
     Tile* newTile;
@@ -106,6 +136,13 @@ void Player::update(TileMap& p_tileMap){
             }
         }
     }
+    if(!m_isAlive){
+        m_speed.x = 0;
+    }
+    else{
+        if(m_speed.x < 0) m_drawSourceWidth = abs(m_drawSourceWidth) * -1;
+        else if(m_speed.x > 0) m_drawSourceWidth = abs(m_drawSourceWidth);
+    }
     
     //// Vertical Movement ////
     if(IsKeyPressed(KEY_SPACE))
@@ -119,12 +156,17 @@ void Player::update(TileMap& p_tileMap){
     if(m_canJump && GetTime() - m_lastJumpTime < kBufferTime){
         m_speed.y = -kJumpSpeedStart * 60.f;
         m_canJump = false;
+        
+        for(int i = 0; i < 12; i++)
+            m_jumpParticles.push_back(Particle( {m_cornerBL.x+2*i, m_cornerBL.y}, GetRandomValue(180, 359), 0.2, 2));
     }
     // Cesium push
     if(m_onWater && m_orb.getMode() == MODE_CESIUM){
         m_speed.y = -kJumpSpeedStart * 100.f;
         m_canJump = false;
         m_cesiumPush = true;
+        for(int i = -4; i < 16; i++)
+            m_cesiumParticles.push_back(Particle( {m_cornerBL.x+2*i, m_cornerBL.y}, GetRandomValue(180, 359), 0.5));
     }
     if(m_speed.y > -10)
         m_cesiumPush = false;
@@ -176,15 +218,25 @@ void Player::update(TileMap& p_tileMap){
     
     // Light Collision
     m_onLight = false;
-    for(const auto& lamp : p_tileMap.getLamps()){
-        if( lamp->pointInsideLight(m_cornerTL)
-         || lamp->pointInsideLight(m_cornerTR)
-         || lamp->pointInsideLight(m_cornerBL)
-         || lamp->pointInsideLight(m_cornerBR)){
-             m_onLight = true;
-             m_isAlive = m_orb.getMode() == MODE_IRON;
-             break;
-         }
+    if(m_isAlive){
+        for(const auto& lamp : p_tileMap.getLamps()){
+            if( lamp->pointInsideLight(m_cornerTL)
+             || lamp->pointInsideLight(m_cornerTR)
+             || lamp->pointInsideLight(m_cornerBL)
+             || lamp->pointInsideLight(m_cornerBR)){
+                 m_onLight = true;
+                 if(m_orb.getMode() == MODE_IRON){
+                     m_isAlive = true;
+                 }
+                 else{
+                     m_isAlive = false;
+                     for(int i = 0; i < 128; i++){
+                        m_deathParticles.push_back(Particle( {m_cornerTL.x+kPlayerWidth/2, m_cornerTL.y+kPlayerHeight/2}, GetRandomValue(0, 359), 0.5, 0.f, GetRandomValue(80, 120) / 10.f));
+                     }
+                 }
+                 break;
+             }
+        }
     }
     
     // Iron Charge
@@ -221,7 +273,8 @@ void Player::update(TileMap& p_tileMap){
     m_orb.update(p_tileMap.getMagCores());
 }
 
-void Player::draw(TileMap& p_tileMap){
+void Player::draw(TileMap& p_tileMap, Texture2D& p_texture){
+    // light background
     if(m_onLight){
         int i = 0;
         Tile* tLeft = p_tileMap.getTileWorldPos(m_cornerBL.x, m_cornerBL.y);
@@ -246,13 +299,27 @@ void Player::draw(TileMap& p_tileMap){
         DrawRectangleV(m_position, {kPlayerWidth * 1.f, lightCoverHeight}, {20, 20, 20, 255});
     }
     
+    // player
     if(m_orb.onFront()){
-        DrawRectangleV(m_position, {kPlayerWidth,kPlayerHeight}, WHITE);
+        // DrawRectangleV(m_position, {kPlayerWidth,kPlayerHeight}, WHITE);
+        DrawTexturePro( p_texture
+                      , { 0.f, 0.f, m_drawSourceWidth, (float)p_texture.height }
+                      , { m_position.x+kPlayerWidth/2, m_position.y+kPlayerHeight/2, kPlayerWidth, kPlayerHeight }
+                      , { p_texture.width / 2.f, p_texture.height / 2.f }
+                      , m_speed.x * 2
+                      , WHITE);
+        
         m_orb.draw(m_orbTextures[m_orb.getMode()]);
     }
     else{
         m_orb.draw(m_orbTextures[m_orb.getMode()]);
-        DrawRectangleV(m_position, {kPlayerWidth,kPlayerHeight}, WHITE);
+        DrawTexturePro( p_texture
+                      , { 0.f, 0.f, m_drawSourceWidth, (float)p_texture.height }
+                      , { m_position.x+kPlayerWidth/2, m_position.y+kPlayerHeight/2, kPlayerWidth, kPlayerHeight }
+                      , { p_texture.width / 2.f, p_texture.height / 2.f }
+                      , m_speed.x * 2
+                      , WHITE);
+        // DrawRectangleV(m_position, {kPlayerWidth,kPlayerHeight}, WHITE);
     }
     
     // Iron Indicator
@@ -263,7 +330,7 @@ void Player::draw(TileMap& p_tileMap){
     }
     
     // Debug
-    // DrawText(std::to_string(m_speed.y).c_str(), 50, 30, 20, WHITE);
+    // DrawText(std::to_string(m_speed.x).c_str(), 50, 30, 20, WHITE);
     // DrawText(std::to_string(m_canJump).c_str(), 50, 50, 20, WHITE);
     // DrawText(std::to_string(m_onLight).c_str(), 50, 70, 20, WHITE);
     // DrawText(std::to_string(m_onWater).c_str(), 50, 90, 20, WHITE);
@@ -271,6 +338,16 @@ void Player::draw(TileMap& p_tileMap){
     // DrawCircleV(m_cornerTR, 3.f, RED);
     // DrawCircleV(m_cornerBL, 3.f, RED);
     // DrawCircleV(m_cornerBR, 3.f, RED);
+}
+
+void Player::drawEffects(Texture2D& p_particleTexture){
+    for(auto& particle : m_jumpParticles)
+        particle.draw(p_particleTexture, GRAY, false);
+    for(auto& particle : m_cesiumParticles)
+        particle.draw(p_particleTexture, GetRandomValue(0,6) ? BLUE : WHITE, false);
+    for(auto& particle : m_deathParticles)
+        particle.draw(p_particleTexture, YELLOW, false);
+    m_orb.drawEffects(p_particleTexture);
 }
 
 bool Player::isAlive() const{
@@ -286,6 +363,9 @@ void Player::restart(){
     m_canJump = false;
     m_lastFloorTime = 0.0;
     m_lastJumpTime = 0.0;
+    m_jumpParticles.clear();
+    m_cesiumParticles.clear();
+    m_deathParticles.clear();
 }
 
 float Player::getX() const{

@@ -39,7 +39,7 @@ void SceneMenu::draw(){
     // Title
     DrawTexturePro( texLogo
                   , { 0.f, 0.f, (float)texLogo.width, (float)texLogo.height }
-                  , { 50.f, 50.f, 924.f, 100.f }
+                  , { 50.f, 50.f, 924.f, 125.f }
                   , { 0.f, 0.f }
                   , 0.f
                   , WHITE);

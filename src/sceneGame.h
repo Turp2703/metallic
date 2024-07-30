@@ -21,7 +21,8 @@ class SceneGame : public Scene{
         int m_currentLevel;
         
         // Textures
-        //Texture2D m_texBlock;
+        Texture2D m_texPlayer;
+        Texture2D m_texParticle;
 
         // Sounds
         //Sound soundStart;

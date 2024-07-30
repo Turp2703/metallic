@@ -123,12 +123,12 @@ void TileMap::setMagSlot(Tile* p_magSlot, Lamp* p_lamp){
 
 void TileMap::activateMagSlot(Tile* p_magSlot){
     Lamp* lamp = m_magSlots[p_magSlot];
-    lamp->breakLamp();
+    lamp->breakLamp(p_magSlot->getPositionWorld());
     lamp->setType(TILE_LAMPBROKEN);
     p_magSlot->setType(TILE_MAGSLOTACTIVE);
 }
 
-void TileMap::draw() {
+void TileMap::draw(Texture2D& m_particleTexture) {
     for (int y = 0; y < kMapHeight; y++) {
         for (int x = 0; x < kMapWidth; x++) {
             Tile* t = m_map[x][y];
@@ -139,6 +139,8 @@ void TileMap::draw() {
     
     for(const auto& mc : m_magCores)
         mc->draw(m_textureMagCore);
+    for(const auto& l : m_lamps)
+        l->drawEffects(m_particleTexture);
 }
 
 void TileMap::drawWater(){
@@ -237,7 +239,7 @@ void TileMap::loadMap(int mapNumber){
         Lamp* lamp1 = new Lamp({12.f,11.f}, TILE_LAMP, true, 4);
         setLamp(lamp1);
         setMagCore(new MagCore( {6.f*kTileSize, 14.f*kTileSize} ));
-        setMagSlot(new Tile( {6.f, 3.f}, TILE_MAGSLOT, false ), lamp1);
+        setMagSlot(new Tile( {5.f, 3.f}, TILE_MAGSLOT, false ), lamp1);
         Lamp* lamp2 = new Lamp({28.f,2.f}, TILE_LAMP, true, 3);
         setLamp(lamp2);
         setMagCore(new MagCore( {20.f*kTileSize, 3.f*kTileSize} ));
@@ -249,6 +251,7 @@ void TileMap::loadMap(int mapNumber){
     // Destroy lamp to use cesium on water
     // Destroy lamp to make two modules available (extra lamp to restart)
     // Tight spot between lamps
+    // Double pool jump with module
     
     ////////// old //////////
     else if(mapNumber == 6){
