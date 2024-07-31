@@ -51,6 +51,10 @@ void SceneGame::update(Game* p_game){
         }
     }
     
+    // LAST LEVEL
+    if(m_currentLevel == kLastLevel && IsKeyPressed(KEY_T))
+        p_game->changeScene(new SceneMenu(m_screenWidth, m_screenHeight));
+    
     // DEBUG
     // if(IsKeyPressed(KEY_ONE))
         // p_game->changeScene(new SceneMenu(m_screenWidth, m_screenHeight));
@@ -106,10 +110,11 @@ void SceneGame::draw(){
         DrawText("certain lamps by" , 375, 166, 18, PURPLE);
         DrawText("connecting modules" , 368, 188, 18, PURPLE);
     }
-    else if(m_currentLevel == 6){
-        DrawRectangleLines(64, 64, 215, 54, PURPLE);
-        DrawText("That's it for now" , 68, 68, 22, PURPLE);
-        DrawText("5 more levels soon", 68, 94, 22, PURPLE);
+    else if(m_currentLevel == kLastLevel){
+        DrawRectangleLines(445, 224, 245, 78, PURPLE);
+        DrawText("Congratulations!", 477, 228, 22, PURPLE);
+        DrawText("That's it for now" , 472, 252, 22, PURPLE);
+        DrawText("Press [T] to go back", 452, 276, 22, PURPLE);
     }
     
     // Effects

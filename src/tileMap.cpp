@@ -246,72 +246,94 @@ void TileMap::loadMap(int mapNumber){
         setLamp(new Lamp({15.f,11.f}, TILE_LAMP, true, 4));
         setLamp(new Lamp({25.f,2.f}, TILE_LAMP, true, 3));
     }
-    
-    // Destroy lamp to use cesium on water
-    // Destroy lamp to make two modules available (extra lamp to restart)
-    // Tight spot between lamps
-    // Double pool jump with module
-    
     else if(mapNumber == 6){
-        // TODO
+        addExit(2);
+        
+        addBlockPlatform(2, 4, 3, false);
+        addBlockPlatform(14, 13, 3, false);
+        addBlockPlatform(19, 10, 2, false);
+        addBlockPlatform(16, 7, 1, false);
+        addBlockPlatform(21, 6, 9, false);
+        addBlockPlatform(22, 1, 1, false);
+        addBlockPlatform(25, 1, 1, false);
+        addBlockPlatform(28, 1, 1, false);
+        
+        addWaterPool(8, 16, 2, true);
+        addWaterPool(5, 9, 2, false);
+        addWaterPool(25, 16, 2, true);
+        
+        Lamp* lamp1 = new Lamp({22.f,2.f}, TILE_LAMP, true, 3);
+        setLamp(lamp1);
+        setMagCore(new MagCore( {5.f*kTileSize, 14.f*kTileSize} ));
+        setMagSlot(new Tile( {2.f, 2.f}, TILE_MAGSLOT, false ), lamp1);
+        Lamp* lamp2 = new Lamp({28.f,2.f}, TILE_LAMP, true, 3);
+        setLamp(lamp2);
+        setMagCore(new MagCore( {23.f*kTileSize, 14.f*kTileSize} ));
+        setMagSlot(new Tile( {29.f, 8.f}, TILE_MAGSLOT, false ), lamp2);
+        setLamp(new Lamp({25.f,2.f}, TILE_LAMP, true, 3));
     }
-    ////////// old //////////
     else if(mapNumber == 7){
-        addBlockPlatform(2, 2, 4, false);
-        addBlockPlatform(2, 3, 2, true);
-        addBlockRectangle(8, 2, 2, 2, true);
-        addBlockRectangle(12, 2, 5, 5, true);
-        addBlockRectangle(18, 2, 5, 5, false);
-        addWaterPool(4, kMapHeight-6, 4, false);
-        addWaterPool(16, kMapHeight-6, 1, false);
-        addWaterPool(10, kMapHeight-2, 4, true);
-        addExit(kMapHeight - 6);
+        addExit(2);
+        
+        addBlockPlatform(13, 13, 1, false);
+        addBlockPlatform(17, 9, 1, false);
+        addBlockPlatform(7, 10, 3, false);
+        addBlockPlatform(7, 8, 1, false);
+        addBlockPlatform(8, 7, 1, false);
+        addBlockPlatform(9, 6, 1, false);
+        addBlockPlatform(3, 5, 1, false);
+        addBlockPlatform(20, 6, 10, false);
+        addBlockPlatform(22, 1, 1, false);
+        addBlockPlatform(25, 1, 1, false);
+        addBlockPlatform(28, 1, 1, false);
+        
+        addFillRectOnFloor(5, 14, 2, 3);
+        addFillRectOnFloor(10, 14, 2, 3);
+        
+        addWaterPool(27, 16, 3, true);
+        
+        Lamp* lamp1 = new Lamp({8.f,11.f}, TILE_LAMP, true, 4);
+        setLamp(lamp1);
+        setMagCore(new MagCore( {25.f*kTileSize, 14.f*kTileSize} ));
+        setMagSlot(new Tile( {2.f, 2.f}, TILE_MAGSLOT, false ), lamp1);
+        Lamp* lamp2 = new Lamp({22.f,2.f}, TILE_LAMP, true, 3);
+        setLamp(lamp2);
+        setMagCore(new MagCore( {7.5f*kTileSize, 14.5f*kTileSize} ));
+        setMagSlot(new Tile( {27.f, 8.f}, TILE_MAGSLOT, false ), lamp2);
+        Lamp* lamp3 = new Lamp({28.f,2.f}, TILE_LAMP, true, 3);
+        setLamp(lamp3);
+        setMagCore(new MagCore( {8.5f*kTileSize, 14.5f*kTileSize} ));
+        setMagSlot(new Tile( {29.f, 8.f}, TILE_MAGSLOT, false ), lamp3);
+        setLamp(new Lamp({25.f,2.f}, TILE_LAMP, true, 3));
     }
     else if(mapNumber == 8){
-        for(int i = 1; i < kMapWidth - 1; i++)
-            setTile(new Tile({i*1.f,kMapHeight-2.f}, TILE_BASE, true));
-        for(int i = 3; i < 10; i++)
-            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
-        for(int i = 4; i < 9; i++)
-            setWater(new Tile({i*1.f,kMapHeight-5.f}, TILE_WATER, false));
-        setTile(new Tile({3,kMapHeight-5.f}, TILE_BASE, true));
-        setTile(new Tile({9,kMapHeight-5.f}, TILE_BASE, true));
-        for(int i = 22; i < 29; i++)
-            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
-        for(int i = 22; i < 29; i++)
-            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
-        for(int i = 25; i < 28; i++)
-            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
-    }
-    else if(mapNumber == 9){
-        for(int i = 1; i < kMapWidth - 1; i++)
-            setTile(new Tile({i*1.f,kMapHeight-2.f}, TILE_BASE, true));
-        for(int i = 3; i < 7; i++)
-            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
-        for(int i = 7; i < 10; i++)
-            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
-        for(int i = 22; i < 29; i++)
-            setTile(new Tile({i*1.f,kMapHeight-4.f}, TILE_BASE, true));
-        for(int i = 22; i < 29; i++)
-            setTile(new Tile({i*1.f,kMapHeight-5.f}, TILE_BASE, true));
-        for(int i = 25; i < 28; i++)
-            setTile(new Tile({i*1.f,kMapHeight-6.f}, TILE_BASE, true));
-        Lamp* lamp1 = new Lamp({5.f,kMapHeight-5.f}, TILE_LAMP, true, 2);
+        addExit(2);
+        
+        addBlockPlatform(17, 6, 1, false);
+        addBlockPlatform(19, 3, 3, true);
+        addBlockPlatform(20, 6, 10, false);
+        addBlockPlatform(25, 1, 1, false);
+        addBlockPlatform(28, 1, 1, false);
+        
+        addBlockRectangle(3, 9, 21, 4, true);
+        addBlockRectangle(6, 3, 3, 2, true);
+        
+        addWaterPool(25, 16, 2, true);
+        
+        Lamp* lamp1 = new Lamp({7.f,5.f}, TILE_LAMP, true, 3);
         setLamp(lamp1);
-        setMagCore(new MagCore( {5.f*kTileSize, (kMapHeight - 8.f)*kTileSize} ));
-        setMagCore(new MagCore( {3.f*kTileSize, (kMapHeight - 8.f)*kTileSize} ));
-        setMagSlot(new Tile( {26.f, kMapHeight-8.f}, TILE_MAGSLOT, false ), lamp1);
-    }
-    else if(mapNumber == 10){
-        addBlockPlatform(2, 2, 4, false);
-        addBlockPlatform(2, 3, 2, true);
-        addBlockRectangle(8, 2, 2, 2, true);
-        addBlockRectangle(12, 2, 5, 5, true);
-        addBlockRectangle(18, 2, 5, 5, false);
-        addWaterPool(4, kMapHeight-6, 4, false);
-        addWaterPool(16, kMapHeight-6, 1, false);
-        addWaterPool(10, kMapHeight-2, 4, true);
-        addExit(kMapHeight - 6);
+        setMagCore(new MagCore( {21.f*kTileSize, 4.f*kTileSize} ));
+        setMagSlot(new Tile( {29.f, 14.f}, TILE_MAGSLOT, false ), lamp1);
+        Lamp* lamp2 = new Lamp({25.f,2.f}, TILE_LAMP, true, 3);
+        setLamp(lamp2);
+        setMagCore(new MagCore( {22.f*kTileSize, 4.f*kTileSize} ));
+        setMagSlot(new Tile( {4.f, 7.f}, TILE_MAGSLOT, false ), lamp2);
+        
+        setLamp(new Lamp({6.f,13.f}, TILE_LAMP, true, 2));
+        setLamp(new Lamp({11.f,13.f}, TILE_LAMP, true, 2));
+        setLamp(new Lamp({16.f,13.f}, TILE_LAMP, true, 2));
+        setLamp(new Lamp({21.f,13.f}, TILE_LAMP, true, 2));
+        setLamp(new Lamp({28.f,2.f}, TILE_LAMP, true, 3));
     }
 }
 

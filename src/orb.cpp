@@ -23,6 +23,9 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
             it++;
         }
     }
+
+    m_leftMag  = { m_position.x - 32.f, m_position.y + 16.f };
+    m_rightMag = { m_position.x + 64.f, m_position.y + 16.f };
     
     if(m_mode == MODE_ORB){
         m_orbit += kOrbitSpeed;
@@ -71,8 +74,6 @@ void Orb::update(const std::vector<MagCore*>& m_magCores){
         m_neoParticles.push_back(Particle( {m_rightMag.x, m_rightMag.y+GetRandomValue(-12,12)}, 0, 0.2));
     }
     m_position = Vector2Lerp(m_position, m_target, m_followSpeed);
-    m_leftMag  = { m_position.x - 32.f, m_position.y + 16.f };
-    m_rightMag = { m_position.x + 64.f, m_position.y + 16.f };
 }
         
 void Orb::draw(Texture2D& p_texture){
@@ -118,4 +119,5 @@ void Orb::setMode(OrbMode p_newMode){
 
 void Orb::restart(){
     m_attachedMagCore = nullptr;
+    m_position = m_target;
 }

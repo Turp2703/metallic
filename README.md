@@ -17,17 +17,14 @@ Keyboard:
  - \[D\] to move right
  - \[Space\] to jump
  - \[W\] to use Iron Ceiling
- - \[S\] to use Cesium Explosion
- - \[K\] to interact
+ - \[K\] to use Cesium Explosion
  - \[J\] to use Neodymium Magnet (left)
  - \[L\] to use Neodymium Magnet (right)
 
 ### Screenshots
 
-![gameplay1](screenshots/gameplay1.png)
-![gameplay2](screenshots/gameplay2.png)
-![gameplay3](screenshots/gameplay3.png)
-![gameover](screenshots/gameover.png)
+![gameplay1](screenshots/ss1.png)
+![gameplay2](screenshots/ss2.png)
 
 ### Developers
 

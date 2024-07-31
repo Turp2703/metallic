@@ -168,7 +168,8 @@ void Player::update(TileMap& p_tileMap){
         
         for(int i = 0; i < 12; i++)
             m_jumpParticles.push_back(Particle( {m_cornerBL.x+2*i, m_cornerBL.y}, GetRandomValue(180, 359), 0.2, 2));
-        PlaySound(m_soundJump);
+        if(!IsSoundPlaying(m_soundJump))
+            PlaySound(m_soundJump);
     }
     // Cesium push
     if(m_onWater && m_orb.getMode() == MODE_CESIUM){
@@ -177,7 +178,8 @@ void Player::update(TileMap& p_tileMap){
         m_cesiumPush = true;
         for(int i = -4; i < 16; i++)
             m_cesiumParticles.push_back(Particle( {m_cornerBL.x+2*i, m_cornerBL.y}, GetRandomValue(180, 359), 0.5));
-        PlaySound(m_soundCesiumPush);
+        if(!IsSoundPlaying(m_soundCesiumPush))
+            PlaySound(m_soundCesiumPush);
     }
     if(m_speed.y > -10)
         m_cesiumPush = false;
@@ -372,6 +374,7 @@ void Player::restart(){
     m_isAlive = true;
     m_position = { 36.f, kScreenHeight - 32.f*4 };
     m_chargeIron = kIronMax;
+    m_orb.setTarget(m_position);
     m_orb.restart();
     m_speed = Vector2Zero();
     m_canJump = false;

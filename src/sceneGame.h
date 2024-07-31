@@ -13,7 +13,7 @@ class SceneGame : public Scene{
     private:        
         const int kScreenWidth;
         const int kScreenHeight;
-        const int kLastLevel = 6;
+        const int kLastLevel = 9;
     
         // Objects
         Player m_player;
