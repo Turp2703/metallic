@@ -7,7 +7,7 @@ class TileMap;
 class MagCore{
     public:
         MagCore(Vector2);
-        void update(TileMap&);
+        void update(TileMap&, Sound&);
         void draw(Texture2D&);
         void attach(Vector2);
         void detach();

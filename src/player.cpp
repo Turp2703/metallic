@@ -26,6 +26,11 @@ Player::Player(int p_screenHeight, int p_screenWidth)
     m_orbTextures[MODE_CESIUM] = LoadTexture("assets/cesium.png");
     m_orbTextures[MODE_NEOL] = LoadTexture("assets/neodymiumL.png");
     m_orbTextures[MODE_NEOR] = LoadTexture("assets/neodymiumR.png");
+    
+    m_soundDeath = LoadSound("assets/death.wav");
+    m_soundJump = LoadSound("assets/jump.wav");
+    m_soundCesiumPush = LoadSound("assets/cesiumPush.wav");
+    m_soundIronCharged = LoadSound("assets/ironCharged.wav");
 }
 
 void Player::update(TileMap& p_tileMap){
@@ -163,6 +168,7 @@ void Player::update(TileMap& p_tileMap){
         
         for(int i = 0; i < 12; i++)
             m_jumpParticles.push_back(Particle( {m_cornerBL.x+2*i, m_cornerBL.y}, GetRandomValue(180, 359), 0.2, 2));
+        PlaySound(m_soundJump);
     }
     // Cesium push
     if(m_onWater && m_orb.getMode() == MODE_CESIUM){
@@ -171,6 +177,7 @@ void Player::update(TileMap& p_tileMap){
         m_cesiumPush = true;
         for(int i = -4; i < 16; i++)
             m_cesiumParticles.push_back(Particle( {m_cornerBL.x+2*i, m_cornerBL.y}, GetRandomValue(180, 359), 0.5));
+        PlaySound(m_soundCesiumPush);
     }
     if(m_speed.y > -10)
         m_cesiumPush = false;
@@ -237,6 +244,7 @@ void Player::update(TileMap& p_tileMap){
                      for(int i = 0; i < 128; i++){
                         m_deathParticles.push_back(Particle( {m_cornerTL.x+kPlayerWidth/2, m_cornerTL.y+kPlayerHeight/2}, GetRandomValue(0, 359), 0.5, 0.f, GetRandomValue(80, 120) / 10.f));
                      }
+                     PlaySound(m_soundDeath);
                  }
                  break;
              }
@@ -250,6 +258,8 @@ void Player::update(TileMap& p_tileMap){
             m_chargeIron += kIronRecover;
         else
             m_chargeIron += kIronMax - m_chargeIron;
+        if(m_chargeIron == kIronMax)
+            PlaySound(m_soundIronCharged);
     }
     
     // Orb
@@ -381,4 +391,9 @@ Player::~Player(){
     for(auto& t : m_orbTextures)
         UnloadTexture(t.second);
     m_orbTextures.clear();
+    
+    UnloadSound(m_soundDeath);
+    UnloadSound(m_soundJump);
+    UnloadSound(m_soundCesiumPush);
+    UnloadSound(m_soundIronCharged);
 }

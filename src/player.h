@@ -57,4 +57,8 @@ class Player{
         std::vector<Particle> m_jumpParticles;
         std::vector<Particle> m_cesiumParticles;
         std::vector<Particle> m_deathParticles;
+        Sound m_soundDeath;
+        Sound m_soundJump;
+        Sound m_soundCesiumPush;
+        Sound m_soundIronCharged;
 };

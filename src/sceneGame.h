@@ -26,4 +26,6 @@ class SceneGame : public Scene{
 
         // Sounds
         Sound m_soundStart;
+        Sound m_soundLevelLoad;
+        Sound m_soundLampDestruction;
 };

@@ -21,6 +21,8 @@ SceneGame::SceneGame(int p_screenWidth, int p_screenHeight)
     
     // Sounds
     m_soundStart = LoadSound("assets/start.wav");
+    m_soundLevelLoad = LoadSound("assets/levelLoad.wav");
+    m_soundLampDestruction = LoadSound("assets/lampDestruction.wav");
 }
 
 void SceneGame::update(Game* p_game){
@@ -28,18 +30,19 @@ void SceneGame::update(Game* p_game){
     m_player.update(m_tileMap);
     
     for(const auto& mc : m_tileMap.getMagCores())
-        mc->update(m_tileMap);
+        mc->update(m_tileMap, m_soundLampDestruction);
     
     // Beat Level
     if(m_player.getX() > kScreenWidth && m_currentLevel < kLastLevel){
         m_player.restart();
         m_tileMap.loadMap(++m_currentLevel);
+        PlaySound(m_soundLevelLoad);
     }
     
     // GAME OVER
     if(!m_player.isAlive()){
         if(IsKeyPressed(KEY_R)){
-            PlaySound(m_soundStart);
+            PlaySound(m_soundLevelLoad);
             m_player.restart();
             m_tileMap.loadMap(m_currentLevel);
         }
@@ -142,4 +145,6 @@ SceneGame::~SceneGame(){
     
     // Sounds
     UnloadSound(m_soundStart);
+    UnloadSound(m_soundLevelLoad);
+    UnloadSound(m_soundLampDestruction);
 }

@@ -14,7 +14,7 @@ MagCore::MagCore(Vector2 p_position)
     /* */
 }
 
-void MagCore::update(TileMap& p_tileMap){
+void MagCore::update(TileMap& p_tileMap, Sound& p_soundLampDestruction){
     if(!m_onSlot){
         Vector2 center = Vector2AddValue(m_position, 16.f);
         Tile* currentTile = p_tileMap.getTileWorldPos(center.x, center.y);
@@ -24,6 +24,7 @@ void MagCore::update(TileMap& p_tileMap){
             m_target = currentTile->getPositionWorld();
             m_followSpeed = 0.1f;
             p_tileMap.activateMagSlot(currentTile);
+            PlaySound(p_soundLampDestruction);
         }
     }
     

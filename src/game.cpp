@@ -33,6 +33,8 @@ void Game::init(const char* p_title){
         SetTargetFPS(60);
         while (!WindowShouldClose()) { UpdateDrawFrame(this); }
     #endif
+    
+    shutdown();
 }
 
 void Game::update(){
@@ -51,5 +53,6 @@ void Game::changeScene(Scene* newScene){
 
 void Game::shutdown(){
     delete m_currentScene;
+    CloseAudioDevice();
     CloseWindow();
 }
