@@ -6,10 +6,6 @@
 
 My second ever game jam submission, a small metal transmutation based platformer made for the "Pirate Software - Game Jam 15".
 
-### Features
-
-TBA
-
 ### Controls
 
 Keyboard:
@@ -33,3 +29,4 @@ Keyboard:
 ### Links
 
  - itch.io Release: https://turp2703.itch.io/metallic
+ - GDD: https://docs.google.com/document/d/1yxFIT_7sTpp2v8E-TOtrPLFeL1wNKK1GNijKghB8zno/edit#heading=h.tdaitw4q35i8
